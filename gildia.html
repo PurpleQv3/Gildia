@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablica Ogłoszeń Gildii</title>
+    <!-- Czcionki w klimacie RPG -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --wood-dark: #1b0f0a;
+            --wood-medium: #3b2214;
+            --wood-light: #593520;
+            --parchment: #f1dfb2;
+            --parchment-dark: #cdb280;
+            --ink: #1f130b;
+            --gold: #d4af37;
+            --gold-light: #f3e5ab;
+            --crimson: #7a0000;
+            --forest: #143d22;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            background-color: #0d0805;
+            background-image: radial-gradient(circle at center, #1f120a 0%, #080402 100%);
+            color: var(--ink);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(to bottom, #2b180f, #150b06);
+            border-bottom: 4px solid #0a0503;
+            padding: 8px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.9);
+            flex-shrink: 0;
+            height: 52px;
+        }
+
+        header h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-light);
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 6px #000, 0 0 10px rgba(212, 175, 55, 0.4);
+            letter-spacing: 2px;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            padding: 12px;
+            gap: 12px;
+            max-width: 100%;
+            height: calc(100vh - 52px);
+        }
+
+        /* ================= TABLICA OGŁOSZEŃ (LEWA STRONA) ================= */
+        .quest-board {
+            flex: 3;
+            background-color: var(--wood-medium);
+            background-image: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.85) 100%),
+                              repeating-linear-gradient(0deg, rgba(0,0,0,0.2) 0px, rgba(0,0,0,0.2) 2px, transparent 2px, transparent 35px);
+            border: 12px solid var(--wood-dark);
+            border-radius: 4px;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.95), 0 12px 30px rgba(0,0,0,0.9);
+            padding: 12px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 10px;
+            height: 100%;
+        }
+
+        .quest-card {
+            background: var(--parchment);
+            /* Realistyczna tekstura pergaminu z ciemniejszymi, wypalonymi brzegami */
+            background-image: radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0.25) 100%),
+                              linear-gradient(135deg, #e6ce9a 0%, #f4e4bc 20%, #d8be8c 80%, #b8975e 100%);
+            padding: 8px 10px;
+            position: relative;
+            box-shadow: 4px 6px 14px rgba(0,0,0,0.8), inset 0 0 15px rgba(90, 60, 30, 0.3);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 1px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            border: 1px solid #9e7b46;
+        }
+
+        .quest-card:nth-child(odd) { transform: rotate(-1.2deg); }
+        .quest-card:nth-child(even) { transform: rotate(1.1deg); }
+        .quest-card:nth-child(3n) { transform: rotate(-0.6deg); }
+
+        .quest-card:hover {
+            transform: scale(1.03) rotate(0deg);
+            box-shadow: 8px 14px 25px rgba(0,0,0,0.9);
+            z-index: 10;
+        }
+
+        .pin {
+            position: absolute;
+            top: -9px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.15rem;
+            filter: drop-shadow(2px 3px 3px rgba(0,0,0,0.8));
+            user-select: none;
+            z-index: 2;
+        }
+
+        .quest-rank {
+            position: absolute;
+            top: 5px;
+            right: 6px;
+            font-family: 'Cinzel', serif;
+            font-weight: 800;
+            font-size: 0.85rem;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--crimson);
+            color: var(--crimson);
+            border-radius: 50%;
+            background: rgba(122, 0, 0, 0.1);
+            box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
+        }
+
+        .quest-title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: #1a0f07;
+            margin-bottom: 2px;
+            padding-right: 20px;
+            border-bottom: 1px dashed rgba(60, 35, 15, 0.4);
+            padding-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .quest-desc {
+            font-size: 0.76rem;
+            line-height: 1.15;
+            color: #2b1a10;
+            margin-bottom: 2px;
+            flex-grow: 1;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .quest-rewards {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 0.78rem;
+            border-top: 1px solid rgba(60, 35, 15, 0.25);
+            padding-top: 3px;
+        }
+
+        .reward-exp { color: #113a5c; }
+        .reward-gold { color: #7a5f05; text-shadow: 0 0 1px rgba(0,0,0,0.2); }
+
+        .quest-status-badge {
+            margin-top: 3px;
+            background: linear-gradient(to bottom, #960000, #5c0000);
+            color: #fff;
+            text-align: center;
+            padding: 2px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.65rem;
+            border-radius: 2px;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* ================= PANEL GRACZY (PRAWA STRONA) ================= */
+        .players-panel {
+            flex: 1;
+            min-width: 290px;
+            max-width: 450px;
+            background: linear-gradient(135deg, #2b170d, #140b06);
+            border: 6px solid #0d0603;
+            border-radius: 6px;
+            padding: 12px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: 100%;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--wood-light);
+            padding-bottom: 6px;
+            flex-shrink: 0;
+        }
+
+        .panel-header h2 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: 0.95rem;
+            text-shadow: 1px 1px 3px #000;
+        }
+
+        .panel-actions-top {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-refresh-quests {
+            background: linear-gradient(to bottom, #593520, #3b2214);
+            color: var(--gold-light);
+            border: 1px solid var(--gold);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.72rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .btn-refresh-quests:hover {
+            background: linear-gradient(to bottom, #73462b, #4a2e1b);
+            border-color: #fff;
+            transform: scale(1.02);
+        }
+
+        .btn-add-player {
+            background: linear-gradient(to bottom, #1e5631, #12331e);
+            color: #fff;
+            border: 1px solid #2e8b57;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .btn-add-player:hover {
+            background: linear-gradient(to bottom, #277341, #1e5631);
+            transform: scale(1.1);
+        }
+
+        .players-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-auto-rows: 1fr;
+            gap: 6px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .player-plaque {
+            background: linear-gradient(145deg, #422818, #1f1007);
+            border: 2px solid var(--gold);
+            border-radius: 4px;
+            padding: 6px 8px;
+            color: #f4e4bc;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.7), inset 0 0 10px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .player-plaque:hover {
+            border-color: var(--gold-light);
+            transform: scale(1.01);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.9);
+        }
+
+        .player-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .player-name {
+            font-family: 'Cinzel', serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .player-rank-badge {
+            background: linear-gradient(to bottom, var(--gold), #9a7d0a);
+            color: #1a110b;
+            font-family: 'Cinzel', serif;
+            font-weight: 800;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 0.68rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .player-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            margin-bottom: 2px;
+            color: #e2c999;
+        }
+
+        .exp-bar-container {
+            width: 100%;
+            height: 6px;
+            background: #0d0603;
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid #5c3a21;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .exp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1b4f72, #3498db);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .no-players-msg {
+            grid-column: 1 / -1;
+            color: #b5987c;
+            text-align: center;
+            font-style: italic;
+            margin: auto;
+            font-size: 0.95rem;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .reset-btn {
+            margin-top: auto;
+            background: transparent;
+            border: 1px solid #422818;
+            color: #8c6d53;
+            padding: 4px;
+            font-family: 'Crimson Text', serif;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 0.78rem;
+            flex-shrink: 0;
+            transition: 0.2s;
+        }
+
+        .reset-btn:hover {
+            color: #fff;
+            border-color: var(--crimson);
+            background: rgba(122, 0, 0, 0.2);
+        }
+
+        /* ================= OKNA DIALOGOWE (MODALE) ================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-box {
+            background: var(--parchment);
+            background-image: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0.2) 100%),
+                              linear-gradient(135deg, #e6ce9a 0%, #f4e4bc 100%);
+            border: 6px solid var(--wood-dark);
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 15px 50px #000, inset 0 0 20px rgba(90, 60, 30, 0.3);
+            text-align: center;
+        }
+
+        .modal-box h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: var(--wood-dark);
+            text-shadow: 0 1px 1px rgba(255,255,255,0.5);
+        }
+
+        .modal-box p {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: var(--ink);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+        }
+
+        .btn-accept { background: var(--forest); color: #fff; }
+        .btn-accept:hover { background: #1a522a; }
+
+        .btn-cancel { background: #5c4033; color: #fff; }
+        .btn-cancel:hover { background: #4a3329; }
+
+        .btn-fail { background: var(--crimson); color: #fff; }
+        .btn-fail:hover { background: #610000; }
+
+        .player-select-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .player-select-btn {
+            padding: 7px;
+            background: var(--parchment-dark);
+            border: 2px solid var(--wood-medium);
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--ink);
+        }
+
+        .player-select-btn:hover:not(:disabled) {
+            background: var(--gold);
+        }
+
+        .player-select-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #999;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 7px;
+            font-family: 'Crimson Text', serif;
+            font-size: 1.05rem;
+            border: 2px solid var(--wood-medium);
+            border-radius: 4px;
+            margin-bottom: 10px;
+            background: #fffdf7;
+            text-align: center;
+            color: var(--ink);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚔️ Tablica Zleceń Gildii</h1>
+    </header>
+
+    <div class="main-container">
+        <!-- LEWA STRONA: TABLICA Z ZADANIAMI -->
+        <main class="quest-board" id="questBoard">
+            <!-- Zadania generowane przez JavaScript -->
+        </main>
+
+        <!-- PRAWA STRONA: TABLICZKI GRACZY -->
+        <aside class="players-panel">
+            <div class="panel-header">
+                <h2>🛡️ Awanturnicy</h2>
+                <div class="panel-actions-top">
+                    <button class="btn-refresh-quests" title="Zresetuj zadania na tablicy za 200 monet" onclick="openResetQuestsModal()">🔄 Odśwież</button>
+                    <button class="btn-add-player" title="Dodaj nowego gracza" onclick="openAddPlayerModal()">+</button>
+                </div>
+            </div>
+            <div class="players-list" id="playersList">
+                <!-- Gracze generowani przez JavaScript -->
+            </div>
+            <button class="reset-btn" onclick="resetData()">Resetuj postępy / wyczyść</button>
+        </aside>
+    </div>
+
+    <!-- MODAL 1: SZCZEGÓŁY ZADANIA -->
+    <div class="modal-overlay" id="questModal">
+        <div class="modal-box">
+            <h3 id="modalQuestTitle">Tytuł zadania</h3>
+            <p id="modalQuestDesc">Opis zadania</p>
+            <p id="modalQuestRewards" style="font-weight: bold;"></p>
+            <div class="modal-buttons" id="modalQuestActions"></div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: WYBÓR GRACZA DO AKCEPTACJI -->
+    <div class="modal-overlay" id="assignModal">
+        <div class="modal-box">
+            <h3>Kto podejmuje się zlecenia?</h3>
+            <p style="font-size: 0.85rem;">Gracz może przyjąć zadanie ze swojej rangi lub maksymalnie o jedną wyżej.</p>
+            <div class="player-select-list" id="playerSelectList"></div>
+            <button class="btn btn-cancel" onclick="closeModals()">Anuluj</button>
+        </div>
+    </div>
+
+    <!-- MODAL 3: DODAWANIE GRACZA -->
+    <div class="modal-overlay" id="addPlayerModal">
+        <div class="modal-box">
+            <h3>Nowy Członek Gildii</h3>
+            <p>Wpisz imię awanturnika (zaczyna z rangą F):</p>
+            <input type="text" id="newPlayerNameInput" placeholder="Np. Geralt z Rivii...">
+            <div class="modal-buttons">
+                <button class="btn btn-accept" onclick="confirmAddPlayer()">Dodaj</button>
+                <button class="btn btn-cancel" onclick="closeModals()">Anuluj</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: EDYCJA MONET -->
+    <div class="modal-overlay" id="editCoinsModal">
+        <div class="modal-box">
+            <h3 id="editCoinsPlayerName">Zarządzaj monetami</h3>
+            <p style="font-size: 0.85rem;">Wpisz kwotę do odjęcia (np. 50) lub dodaj ze znakiem minus (np. -30):</p>
+            <input type="number" id="coinsAmountInput" placeholder="np. 50 lub -20">
+            <div class="modal-buttons">
+                <button class="btn btn-accept" onclick="confirmEditCoins()">Zatwierdź</button>
+                <button class="btn btn-cancel" onclick="closeModals()">Anuluj</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: WYBÓR GRACZA DO RESETU ZADAŃ (KOSZT 200 MONET) -->
+    <div class="modal-overlay" id="resetQuestsModal">
+        <div class="modal-box">
+            <h3>Odświeżenie Tablicy Zleceń</h3>
+            <p style="font-size: 0.85rem;">Koszt opłacenia gońca i nowych plotek to <strong>200 monet</strong>. Wybierz gracza, który pokryje koszt (zadania w toku zostaną nienaruszone):</p>
+            <div class="player-select-list" id="resetQuestsPlayerList"></div>
+            <button class="btn btn-cancel" onclick="closeModals()">Anuluj</button>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           === INDYWIDUALNA KONFIGURACJA ZADAŃ ===
+           ========================================================================== */
+
+        const QUEST_TEMPLATES = {
+            "F": [
+                { title: "Szczury w piwnicy", desc: "Karczmarz potrzebuje pomocy z gryzoniami.", exp: 35, coins: 20 },
+                { title: "Zbiór ziół", desc: "Zielarka potrzebuje rzadkich liści.", exp: 40, coins: 25 },
+                { title: "Dostarczenie listu", desc: "Zanieś poufną przesyłkę do sołtysa.", exp: 30, coins: 15 }
+            ],
+            "D": [
+                { title: "Eskorta kupca", desc: "Ochrona wozu handlowego na traktach.", exp: 80, coins: 60 },
+                { title: "Dziki w uprawach", desc: "Stado dzików niszczy plony rolników.", exp: 75, coins: 50 }
+            ],
+            "C": [
+                { title: "Polowanie na Wilkołaka", desc: "Bestia atakuje podróżnych.", exp: 180, coins: 150 },
+                { title: "Kradzież w ruinach", desc: "Odzyskanie artefaktu z kryjówki.", exp: 200, coins: 170 }
+            ],
+            "B": [
+                { title: "Oczyszczenie Krypty", desc: "Starożytne zło ożyło w grobowcu.", exp: 350, coins: 300 }
+            ],
+            "A": [
+                { title: "Inwazja Upiorów", desc: "Armia widm napada na osady co noc.", exp: 600, coins: 600 }
+            ],
+            "S": [
+                { title: "Smok z Gór Popielnych", desc: "Zgładzenie pradawnego smoka.", exp: 1200, coins: 1500 }
+            ]
+        };
+
+        const MAX_QUESTS = 20;
+
+        /* ==========================================================================
+           === LOGIKA SYSTEMU GILDII ===
+           ========================================================================== */
+
+        const RANKS = ["F", "D", "C", "B", "A", "S"];
+        
+        const RANK_THRESHOLDS = {
+            "F": 100,
+            "D": 250,
+            "C": 500,
+            "B": 1000,
+            "A": 2500,
+            "S": 2500
+        };
+
+        const PINS = ["🗡️", "📌", "📍", "🗡️"];
+
+        let players = JSON.parse(localStorage.getItem('guild_players')) || [];
+        let quests = JSON.parse(localStorage.getItem('guild_quests')) || [];
+        let selectedQuestId = null;
+        let selectedPlayerIdForCoins = null;
+
+        function saveData() {
+            localStorage.setItem('guild_players', JSON.stringify(players));
+            localStorage.setItem('guild_quests', JSON.stringify(quests));
+        }
+
+        function resetData() {
+            if (confirm("Czy na pewno chcesz zresetować i wyczyścić wszystkie dane?")) {
+                localStorage.removeItem('guild_players');
+                localStorage.removeItem('guild_quests');
+                players = [];
+                quests = [];
+                ensureQuestLimit();
+                renderAll();
+            }
+        }
+
+        function getHighestPlayerRankIndex() {
+            if (players.length === 0) return 0;
+            let highestIndex = 0;
+            players.forEach(p => {
+                const idx = RANKS.indexOf(p.rank);
+                if (idx > highestIndex) highestIndex = idx;
+            });
+            return highestIndex;
+        }
+
+        function generateNewQuest() {
+            const maxPlayerRankIdx = getHighestPlayerRankIndex();
+            const allowedMaxIdx = Math.min(maxPlayerRankIdx + 1, RANKS.length - 1);
+            
+            const randomRankIdx = Math.floor(Math.random() * (allowedMaxIdx + 1));
+            const rank = RANKS[randomRankIdx];
+
+            const templates = QUEST_TEMPLATES[rank];
+            const template = templates[Math.floor(Math.random() * templates.length)];
+
+            return {
+                id: Date.now() + Math.floor(Math.random() * 100000),
+                title: template.title,
+                description: template.desc,
+                rank: rank,
+                exp: template.exp,
+                coins: template.coins,
+                assignedTo: null
+            };
+        }
+
+        function ensureQuestLimit() {
+            while (quests.length < MAX_QUESTS) {
+                quests.push(generateNewQuest());
+            }
+        }
+
+        function renderQuests() {
+            const board = document.getElementById('questBoard');
+            board.innerHTML = '';
+
+            quests.forEach((quest, index) => {
+                const card = document.createElement('div');
+                card.className = 'quest-card';
+                card.onclick = () => openQuestModal(quest.id);
+
+                const pinIcon = PINS[index % PINS.length];
+                const assignedPlayer = players.find(p => p.id === quest.assignedTo);
+
+                let statusHtml = '';
+                if (assignedPlayer) {
+                    statusHtml = `<div class="quest-status-badge">⚔️ ${assignedPlayer.name}</div>`;
+                }
+
+                card.innerHTML = `
+                    <div class="pin">${pinIcon}</div>
+                    <div class="quest-rank">${quest.rank}</div>
+                    <div>
+                        <div class="quest-title">${quest.title}</div>
+                        <div class="quest-desc">${quest.description}</div>
+                    </div>
+                    <div>
+                        <div class="quest-rewards">
+                            <span class="reward-exp">✨ +${quest.exp}</span>
+                            <span class="reward-gold">🪙 ${quest.coins}</span>
+                        </div>
+                        ${statusHtml}
+                    </div>
+                `;
+                board.appendChild(card);
+            });
+        }
+
+        function renderPlayers() {
+            const list = document.getElementById('playersList');
+            list.innerHTML = '';
+
+            if (players.length === 0) {
+                list.innerHTML = '<div class="no-players-msg">Brak awanturników w gildii.<br>Kliknij + aby dodać pierwszego!</div>';
+                return;
+            }
+
+            players.forEach(player => {
+                const nextThreshold = RANK_THRESHOLDS[player.rank];
+                let progressPercent = 100;
+                let expText = `${player.exp} EXP (MAX)`;
+
+                if (player.rank !== "S") {
+                    progressPercent = Math.min(100, Math.round((player.exp / nextThreshold) * 100));
+                    expText = `${player.exp} / ${nextThreshold} EXP`;
+                }
+
+                const plaque = document.createElement('div');
+                plaque.className = 'player-plaque';
+                plaque.onclick = () => openEditCoinsModal(player.id);
+                plaque.innerHTML = `
+                    <div class="player-top">
+                        <span class="player-name">${player.name}</span>
+                        <span class="player-rank-badge">${player.rank}</span>
+                    </div>
+                    <div class="player-stats">
+                        <span style="font-size: 0.68rem;">${expText}</span>
+                        <span style="color: var(--gold); font-weight: bold;">🪙 ${player.coins}</span>
+                    </div>
+                    <div class="exp-bar-container">
+                        <div class="exp-bar-fill" style="width: ${progressPercent}%"></div>
+                    </div>
+                `;
+                list.appendChild(plaque);
+            });
+        }
+
+        function renderAll() {
+            ensureQuestLimit();
+            renderQuests();
+            renderPlayers();
+            saveData();
+        }
+
+        function openQuestModal(questId) {
+            selectedQuestId = questId;
+            const quest = quests.find(q => q.id === questId);
+            if (!quest) return;
+
+            document.getElementById('modalQuestTitle').innerText = `[Ranga ${quest.rank}] ${quest.title}`;
+            document.getElementById('modalQuestDesc').innerText = quest.description;
+            document.getElementById('modalQuestRewards').innerText = `Nagroda: ${quest.exp} EXP | ${quest.coins} monet`;
+
+            const actionsDiv = document.getElementById('modalQuestActions');
+            actionsDiv.innerHTML = '';
+
+            if (quest.assignedTo === null) {
+                if (players.length === 0) {
+                    actionsDiv.innerHTML = `<p style="color: var(--crimson); font-weight: bold;">Najpierw dodaj gracza do gildii!</p>`;
+                } else {
+                    actionsDiv.innerHTML = `
+                        <button class="btn btn-accept" onclick="openAssignModal()">Akceptuj</button>
+                        <button class="btn btn-cancel" onclick="closeModals()">Anuluj</button>
+                    `;
+                }
+            } else {
+                const player = players.find(p => p.id === quest.assignedTo);
+                const penalty = Math.floor(quest.coins * 0.5);
+                actionsDiv.innerHTML = `
+                    <p style="width: 100%; font-size: 0.9rem; color: #3b2214; margin-bottom: 5px;">
+                        Podjęte przez: <strong>${player ? player.name : 'Nieznany'}</strong><br>
+                        (Kara: -${penalty} monet)
+                    </p>
+                    <button class="btn btn-accept" onclick="completeQuest(true)">Ukończone</button>
+                    <button class="btn btn-fail" onclick="completeQuest(false)">Nie ukończone</button>
+                    <button class="btn btn-cancel" onclick="closeModals()">Wróć</button>
+                `;
+            }
+
+            document.getElementById('questModal').style.display = 'flex';
+        }
+
+        function openAssignModal() {
+            document.getElementById('questModal').style.display = 'none';
+            const quest = quests.find(q => q.id === selectedQuestId);
+            const questRankIndex = RANKS.indexOf(quest.rank);
+
+            const selectList = document.getElementById('playerSelectList');
+            selectList.innerHTML = '';
+
+            players.forEach(player => {
+                const playerRankIndex = RANKS.indexOf(player.rank);
+                const canAccept = questRankIndex <= playerRankIndex + 1;
+
+                const btn = document.createElement('button');
+                btn.className = 'player-select-btn';
+                btn.disabled = !canAccept;
+                btn.innerHTML = `
+                    <span>${player.name} (Ranga ${player.rank})</span>
+                    <span>${canAccept ? 'Wybierz ➔' : 'Za niska ranga 🔒'}</span>
+                `;
+                if (canAccept) {
+                    btn.onclick = () => assignQuestToPlayer(player.id);
+                }
+                selectList.appendChild(btn);
+            });
+
+            document.getElementById('assignModal').style.display = 'flex';
+        }
+
+        function assignQuestToPlayer(playerId) {
+            const quest = quests.find(q => q.id === selectedQuestId);
+            if (quest) {
+                quest.assignedTo = playerId;
+                renderAll();
+            }
+            closeModals();
+        }
+
+        function completeQuest(isSuccess) {
+            const questIndex = quests.findIndex(q => q.id === selectedQuestId);
+            if (questIndex === -1) return;
+
+            const quest = quests[questIndex];
+            const player = players.find(p => p.id === quest.assignedTo);
+
+            if (player) {
+                if (isSuccess) {
+                    player.exp += quest.exp;
+                    player.coins += quest.coins;
+                    checkRankUp(player);
+                    quests.splice(questIndex, 1);
+                } else {
+                    const penalty = Math.floor(quest.coins * 0.5);
+                    player.coins = Math.max(0, player.coins - penalty);
+                    quest.assignedTo = null;
+                }
+            }
+
+            renderAll();
+            closeModals();
+        }
+
+        function checkRankUp(player) {
+            while (player.rank !== "S") {
+                const requiredExp = RANK_THRESHOLDS[player.rank];
+                if (player.exp >= requiredExp) {
+                    const currentIndex = RANKS.indexOf(player.rank);
+                    player.rank = RANKS[currentIndex + 1];
+                    alert(`🎉 AWANS! ${player.name} osiąga rangę ${player.rank}!`);
+                } else {
+                    break;
+                }
+            }
+        }
+
+        function openAddPlayerModal() {
+            document.getElementById('newPlayerNameInput').value = '';
+            document.getElementById('addPlayerModal').style.display = 'flex';
+            document.getElementById('newPlayerNameInput').focus();
+        }
+
+        function confirmAddPlayer() {
+            const nameInput = document.getElementById('newPlayerNameInput');
+            const name = nameInput.value.trim();
+            if (!name) {
+                alert("Wpisz imię awanturnika!");
+                return;
+            }
+
+            const newPlayer = {
+                id: Date.now(),
+                name: name,
+                rank: "F",
+                exp: 0,
+                coins: 0
+            };
+
+            players.push(newPlayer);
+            renderAll();
+            closeModals();
+        }
+
+        function openEditCoinsModal(playerId) {
+            selectedPlayerIdForCoins = playerId;
+            const player = players.find(p => p.id === playerId);
+            document.getElementById('editCoinsPlayerName').innerText = `Monety: ${player.name}`;
+            document.getElementById('coinsAmountInput').value = '';
+            document.getElementById('editCoinsModal').style.display = 'flex';
+            document.getElementById('coinsAmountInput').focus();
+        }
+
+        function confirmEditCoins() {
+            const amountInput = document.getElementById('coinsAmountInput');
+            const val = parseInt(amountInput.value);
+            
+            if (isNaN(val)) {
+                alert("Wpisz poprawną liczbę!");
+                return;
+            }
+
+            const player = players.find(p => p.id === selectedPlayerIdForCoins);
+            if (player) {
+                player.coins = Math.max(0, player.coins - val);
+                renderAll();
+            }
+            closeModals();
+        }
+
+        // Obsługa modalu resetu zadań za 200 monet
+        function openResetQuestsModal() {
+            if (players.length === 0) {
+                alert("Brak graczy w gildii, aby opłacić odświeżenie tablicy!");
+                return;
+            }
+
+            const selectList = document.getElementById('resetQuestsPlayerList');
+            selectList.innerHTML = '';
+
+            players.forEach(player => {
+                const canAfford = player.coins >= 200;
+                const btn = document.createElement('button');
+                btn.className = 'player-select-btn';
+                btn.disabled = !canAfford;
+                btn.innerHTML = `
+                    <span>${player.name} (Posiada: 🪙 ${player.coins})</span>
+                    <span>${canAfford ? 'Opłać 200 🪙 ➔' : 'Za mało monet 🔒'}</span>
+                `;
+                if (canAfford) {
+                    btn.onclick = () => confirmResetQuests(player.id);
+                }
+                selectList.appendChild(btn);
+            });
+
+            document.getElementById('resetQuestsModal').style.display = 'flex';
+        }
+
+        function confirmResetQuests(playerId) {
+            const player = players.find(p => p.id === playerId);
+            if (!player || player.coins < 200) {
+                alert("Ten gracz nie ma wystarczającej liczby monet!");
+                return;
+            }
+
+            // Pobranie opłaty
+            player.coins -= 200;
+
+            // Zostawiamy tylko zadania, które są przypisane (w trakcie)
+            const activeQuests = quests.filter(q => q.assignedTo !== null);
+            
+            // Czyszczenie starej tablicy i wpisanie aktywnych
+            quests = [...activeQuests];
+
+            // Dociągamy do limitu 20 nowych zadań
+            ensureQuestLimit();
+
+            renderAll();
+            closeModals();
+            alert(`📜 Tablica została pomyślnie odświeżona! ${player.name} opłacił usługę (koszt: 200 monet).`);
+        }
+
+        function closeModals() {
+            document.getElementById('questModal').style.display = 'none';
+            document.getElementById('assignModal').style.display = 'none';
+            document.getElementById('addPlayerModal').style.display = 'none';
+            document.getElementById('editCoinsModal').style.display = 'none';
+            document.getElementById('resetQuestsModal').style.display = 'none';
+        }
+
+        // Start aplikacji
+        renderAll();
+    </script>
+</body>
+</html>
