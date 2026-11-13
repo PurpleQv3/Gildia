@@ -157,6 +157,11 @@
             text-overflow: ellipsis;
         }
 
+        .quest-number {
+            color: var(--crimson);
+            margin-right: 3px;
+        }
+
         .quest-desc {
             font-size: 0.75rem;
             line-height: 1.15;
@@ -649,7 +654,7 @@
         const MAX_QUESTS = 20;
 
         /* ==========================================================================
-           === LOGIKA SYSTEMU GILDII Z UNIKALNYMI NUMERAMI (A1, A2 itd.) ===
+           === LOGIKA SYSTEMU GILDII ===
            ========================================================================== */
 
         const RANKS = ["F", "D", "C", "B", "A", "S"];
@@ -667,26 +672,34 @@
 
         let players = JSON.parse(localStorage.getItem('guild_players')) || [];
         let quests = JSON.parse(localStorage.getItem('guild_quests')) || [];
-        // Liczniki numerów dla każdej rangi (np. jak daleko zaszło A, B itd.)
-        let rankCounters = JSON.parse(localStorage.getItem('guild_rank_counters')) || { "F": 0, "D": 0, "C": 0, "B": 0, "A": 0, "S": 0 };
+        // Globalny licznik wygenerowanych zadań (A1..A9 -> B1..B9 -> C1 itd.)
+        let questSequence = parseInt(localStorage.getItem('guild_quest_sequence')) || 0;
 
         let selectedQuestId = null;
         let selectedPlayerIdForCoins = null;
 
+        function getNextQuestNumber() {
+            questSequence++;
+            const letterIndex = Math.floor((questSequence - 1) / 9);
+            const digit = ((questSequence - 1) % 9) + 1;
+            const letter = String.fromCharCode(65 + (letterIndex % 26)); // A, B, C...
+            return `${letter}${digit}`;
+        }
+
         function saveData() {
             localStorage.setItem('guild_players', JSON.stringify(players));
             localStorage.setItem('guild_quests', JSON.stringify(quests));
-            localStorage.setItem('guild_rank_counters', JSON.stringify(rankCounters));
+            localStorage.setItem('guild_quest_sequence', questSequence.toString());
         }
 
         function resetData() {
-            if (confirm("Czy na pewno chcesz zresetować i wyczyścić wszystkie dane i numery zadań?")) {
+            if (confirm("Czy na pewno chcesz zresetować i wyczyścić wszystkie dane?")) {
                 localStorage.removeItem('guild_players');
                 localStorage.removeItem('guild_quests');
-                localStorage.removeItem('guild_rank_counters');
+                localStorage.removeItem('guild_quest_sequence');
                 players = [];
                 quests = [];
-                rankCounters = { "F": 0, "D": 0, "C": 0, "B": 0, "A": 0, "S": 0 };
+                questSequence = 0;
                 ensureQuestLimit();
                 renderAll();
             }
@@ -709,16 +722,12 @@
             const randomRankIdx = Math.floor(Math.random() * (allowedMaxIdx + 1));
             const rank = RANKS[randomRankIdx];
 
-            // Inkrementujemy numer dla danej rangi (np. A1 -> A2 itd.)
-            rankCounters[rank] = (rankCounters[rank] || 0) + 1;
-            const questCode = `${rank}${rankCounters[rank]}`;
-
             const templates = QUEST_TEMPLATES[rank];
             const template = templates[Math.floor(Math.random() * templates.length)];
 
             return {
                 id: Date.now() + Math.floor(Math.random() * 100000),
-                code: questCode, // Unikalny stały numer np. "A1"
+                number: getNextQuestNumber(), // Stały numer: A1..A9, B1..B9 itd.
                 title: template.title,
                 description: template.desc,
                 rank: rank,
@@ -729,6 +738,13 @@
         }
 
         function ensureQuestLimit() {
+            // Uzupełniamy brakujące numery w starych zadaniach z pamięci, jeśli jakieś były
+            quests.forEach(q => {
+                if (!q.number) {
+                    q.number = getNextQuestNumber();
+                }
+            });
+
             while (quests.length < MAX_QUESTS) {
                 quests.push(generateNewQuest());
             }
@@ -753,9 +769,9 @@
 
                 card.innerHTML = `
                     <div class="pin">${pinIcon}</div>
-                    <div class="quest-rank" title="Kod zadania: ${quest.code}">${quest.code}</div>
+                    <div class="quest-rank">${quest.rank}</div>
                     <div>
-                        <div class="quest-title">${quest.title}</div>
+                        <div class="quest-title"><span class="quest-number">[${quest.number}]</span>${quest.title}</div>
                         <div class="quest-desc">${quest.description}</div>
                     </div>
                     <div>
@@ -821,7 +837,7 @@
             const quest = quests.find(q => q.id === questId);
             if (!quest) return;
 
-            document.getElementById('modalQuestTitle').innerText = `[${quest.code}] ${quest.title}`;
+            document.getElementById('modalQuestTitle').innerText = `[${quest.number}] [Ranga ${quest.rank}] ${quest.title}`;
             document.getElementById('modalQuestDesc').innerText = quest.description;
             document.getElementById('modalQuestRewards').innerText = `Nagroda: ${quest.exp} EXP | ${quest.coins} monet`;
 
