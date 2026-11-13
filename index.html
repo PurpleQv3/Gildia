@@ -601,51 +601,50 @@
            ========================================================================== */
 
         const QUEST_TEMPLATES = {
-            "F": [
-                { title: "Zagubione Guziki", desc: "Krawiec zgubił małe guziki w trawie. Znajdź dokładnie dziesięć i przynieś je sołtysowi.", exp: 30, coins: 15 },
-                { title: "Zgubiona Sakiewka", desc: "Znajdź ukryte banknoty, które wypadły z sakiewki roztrzepanego kupca i oddaj je pasterce.", exp: 35, coins: 20 },
-                { title: "Projekt Naczynia", desc: "Garncarz potrzebuje unikalnego projektu nowego naczynia glinianego. Narysuj go szczegółowo oraz oddaj sołtysowi.", exp: 30, coins: 18 },
-                { title: "Tajemnicza Wiadomość", desc: "Ktoś zostawił zaszyfrowaną wiadomość pod drzwiami sołtysa. Rozszyfruj ją.", exp: 40, coins: 25 },
-                { title: "Nazwy na Mapie", desc: "Na starej mapie brakuje trzech nazw ulic. Dopasuj je poprawnie do właściwych miejsc.", exp: 35, coins: 20 },
-                { title: "Imię dla Karczmy", desc: "Wymyśl chwytliwą i klimatyczną nazwę dla nowo otwieranego lokalu.", exp: 25, coins: 12 },
-                { title: "Zaginiony Dokument", desc: "Sołtys zgubił ważny dokument. Odnajdź go i dostarcz do jego domu (strefa 4).", exp: 35, coins: 20 },
-                { title: "Uciekinier z Dachu", desc: "Uciekł kot gospodyni. Znajdź go i bezpiecznie odprowadź do właścicielki (strefa 1, oraz zdaj raport pasterce).", exp: 30, coins: 18 },
-                { title: "Worki z Mąką", desc: "Młynarz potrzebuje pomocy przy przeniesieniu worków z mąką (Przenieś 3 worki atletyczne, strefa 5 -> 2).", exp: 30, coins: 15 },
-                { title: "Zgubione Listy", desc: "Listonosz zgubił kilka listów. Odnajdź je wszystkie, zanieś do budynku poczty (strefa 3, oraz zdaj raport pasterce).", exp: 40, coins: 22 }
-            ],
-            "D": [
-                { title: "Sortowanie Drewna", desc: "Stolarz zamówił deski o ściśle określonych długościach. Dokładnie posegreguj patyczki/materiały.", exp: 75, coins: 50 },
-                { title: "Dostawa Towarów", desc: "Pasterka potrzebuje pomocy w bezpiecznym przewiezieniu towarów na tętniący życiem targ (strefa 4).", exp: 80, coins: 60 },
-                { title: "Trzy Przesyłki", desc: "Dostarcz trzy poufne i paczki od sołtysa do różnych, oddalonych od siebie miejsc odbioru (strefa 3, 1 i 2).", exp: 85, coins: 65 },
-                { title: "Kupiecki Cennik", desc: "Kupiec w wyniku chaosu pomylił ceny wszystkich swoich produktów. Uporządkuj i przelicz cennik oraz zaprezentuj go sołtysowi.", exp: 70, coins: 55 },
-                { title: "Wypad do Karczmy", desc: "Przygotuj krótką, rytmiczną przyśpiewkę, którą mieszkańcy będą śpiewać podczas nadchodzącego święta i zaprezentuj ją pasterce.", exp: 75, coins: 50 },
-                { title: "Szyld dla Kowala", desc: "Kowal potrzebuje pomocy w zaprojektowaniu i wykonaniu artystycznego szyldu swojego warsztatu. Po wykonaniu pokaż go sołtysowi.", exp: 90, coins: 70 },
-                { title: "Nieposłuszne Narzędzia", desc: "Kowal potrzebuje pomocy w posegregowaniu swoich narzędzi (strefa 1).", exp: 75, coins: 50 }
-            ],
-            "C": [
-                { title: "Zaginione Buty", desc: "Szewc zgubił latarkę w labiryncie zaułków. Odnajdź ją i przekaż pasterce.", exp: 160, coins: 130 },
-                { title: "Wzór Tkacki", desc: "Tkaczka potrzebuje skomplikowanej pomocy w wykonaniu unikalnego, geometrycznego wzoru na materiał. Narysuj sześciokąt oraz pięciokąt. Zaprezentuj sołtysowi.", exp: 180, coins: 150 },
-                { title: "Zaginiona Receptura", desc: "Zaginęła starożytna receptura na najlepszy chleb w królestwie. Znajdź ukryte składniki (x1 zboże, x1 masło i x1 sól) w całej osadzie i zanieś je do młyna (strefa 2, oraz zdaj raport sołtysowi).", exp: 190, coins: 160 },
-                { title: "Lista Towarów", desc: "Kupiec zgubił spis swoich towarów. Odtwórz go w 100% na podstawie porozrzucanych nazw towarów i pokaż je sołtysowi.", exp: 175, coins: 145 },
-                { title: "Lista Zakupów", desc: "Kupiec przyjechał do wioski z egzotycznymi towarami. Przygotuj listę pięciu najbardziej opłacalnych rzeczy i pokaż ją pasterce.", exp: 165, coins: 135 }
-            ],
-            "B": [
-                { title: "Trochę Ruchu", desc: "Rozgrzewka, wykonaj energicznie 10 przysiadów w wyznaczonym miejscu.", exp: 310, coins: 270 },
-                { title: "Kradzież Flagi", desc: "Ktoś bezczelnie zabrał flagę wioski. Poszukaj wskazówek i ustal, gdzie została ukryta. Raport zdaj sołtysowi.", exp: 340, coins: 300 },
-                { title: "Hasło do Magazynu", desc: "Młynarz w ferworze pracy zapomniał skomplikowanego hasła do swojego magazynu. Rozwiąż zagadkę logiczną z kartki.", exp: 330, coins: 290 },
-                { title: "Miniaturowa Kuźnia", desc: "Zbuduj w pełni działający model miniaturowej kuźni w Waszej wiosce z zakupionych materiałów.", exp: 360, coins: 320 }
-            ],
-            "A": [
-                { title: "Zapasowy Konwój", desc: "Dostarcz niezwykle ważny i wrażliwy towar od sołtysa do pasterki bez upuszczania go (piłka pingpongowa na łyżce trzymanej w buzi).", exp: 600, coins: 550 },
-                { title: "Inżynieria Wozu", desc: "Zbuduj stabilny model wozu kupieckiego w waszej wiosce z zakupionych materiałów.", exp: 620, coins: 580 },
-                { title: "Flaga dla Wioski", desc: "Wioska pilnie potrzebuje własnej, unikalnej flagi. Zaprojektuj, stwórz i zaprezentuj ją pasterce oraz sołtysowi.", exp: 580, coins: 520 }
-            ],
-            "S": [
-                { title: "Logistyka Weselna", desc: "W wiosce odbędzie się królewskie wesele. Zaplanuj przygotowanie dekoracji całego placu głównego oraz zaprezentuj je sołtysowi.", exp: 1200, coins: 1400 },
-                { title: "Wielki Wyścig Przełajowy", desc: "Mieszkańcy chcą zorganizować legendarny wyścig. Wyznacz trudną trasę z przeszkodami po schronie i zaprezentuj plan pasterce.", exp: 1100, coins: 1300 }
-            ]
-        };
-
+    "F": [
+        { title: "Zagubione Guziki", desc: "Krawiec zgubił małe guziki w trawie. Znajdź dokładnie dziesięć i przynieś je sołtysowi.", exp: 30, coins: 15 },
+        { title: "Zgubiona Sakiewka", desc: "Znajdź ukryte banknoty, które wypadły z sakiewki roztrzepanego kupca i oddaj je pasterce.", exp: 35, coins: 20 },
+        { title: "Projekt Naczynia", desc: "Garncarz potrzebuje unikalnego projektu nowego naczynia glinianego. Narysuj go szczegółowo oraz oddaj sołtysowi.", exp: 30, coins: 18 },
+        { title: "Tajemnicza Wiadomość", desc: "Ktoś zostawił zaszyfrowaną wiadomość pod drzwiami sołtysa. Rozszyfruj ją.", exp: 40, coins: 25 },
+        { title: "Nazwy na Mapie", desc: "Na starej mapie brakuje trzech nazw ulic. Dopasuj je poprawnie do właściwych miejsc.", exp: 35, coins: 20 },
+        { title: "Imię dla Karczmy", desc: "Wymyśl chwytliwą i klimatyczną nazwę dla nowo otwieranego lokalu.", exp: 25, coins: 12 },
+        { title: "Zaginiony Dokument", desc: "Sołtys zgubił ważny dokument. Odnajdź go i dostarcz do jego domu (strefa 4).", exp: 35, coins: 20 },
+        { title: "Uciekinier z Dachu", desc: "Uciekł kot gospodyni. Znajdź go i bezpiecznie odprowadź do właścicielki (strefa 1, oraz zdaj raport pasterce).", exp: 30, coins: 18 },
+        { title: "Worki z Mąką", desc: "Młynarz potrzebuje pomocy przy przeniesieniu worków z mąką (Przenieś 3 worki atletyczne, strefa 5 -> 2).", exp: 30, coins: 15 },
+        { title: "Zgubione Listy", desc: "Listonosz zgubił kilka listów. Odnajdź je wszystkie, zanieś do budynku poczty (strefa 3, oraz zdaj raport pasterce).", exp: 40, coins: 22 }
+    ],
+    "D": [
+        { title: "Sortowanie Drewna", desc: "Stolarz zamówił deski o ściśle określonych długościach. Dokładnie posegreguj patyczki/materiały.", exp: 75, coins: 50 },
+        { title: "Dostawa Towarów", desc: "Pasterka potrzebuje pomocy w bezpiecznym przewiezieniu towarów na tętniący życiem targ (strefa 4).", exp: 80, coins: 60 },
+        { title: "Trzy Przesyłki", desc: "Dostarcz trzy poufne i paczki od sołtysa do różnych, oddalonych od siebie miejsc odbioru (strefa 3, 1 i 2).", exp: 85, coins: 65 },
+        { title: "Kupiecki Cennik", desc: "Kupiec w wyniku chaosu pomylił ceny wszystkich swoich produktów. Uporządkuj i przelicz cennik oraz zaprezentuj go sołtysowi.", exp: 70, coins: 55 },
+        { title: "Wypad do Karczmy", desc: "Przygotuj krótką, rytmiczną przyśpiewkę, którą mieszkańcy będą śpiewać podczas nadchodzącego święta i zaprezentuj ją pasterce.", exp: 75, coins: 50 },
+        { title: "Szyld dla Kowala", desc: "Kowal potrzebuje pomocy w zaprojektowaniu i wykonaniu artystycznego szyldu swojego warsztatu. Po wykonaniu pokaż go sołtysowi.", exp: 90, coins: 70 },
+        { title: "Nieposłuszne Narzędzia", desc: "Kowal potrzebuje pomocy w posegregowaniu swoich narzędzi (strefa 1).", exp: 75, coins: 50 }
+    ],
+    "C": [
+        { title: "Zaginione Buty", desc: "Szewc zgubił latarkę w labiryncie zaułków. Odnajdź ją i przekaż pasterce.", exp: 160, coins: 130 },
+        { title: "Wzór Tkacki", desc: "Tkaczka potrzebuje skomplikowanej pomocy w wykonaniu unikalnego, geometrycznego wzoru na materiał. Narysuj sześciokąt oraz pięciokąt. Zaprezentuj sołtysowi.", exp: 180, coins: 150 },
+        { title: "Zaginiona Receptura", desc: "Zaginęła starożytna receptura na najlepszy chleb w królestwie. Znajdź ukryte składniki (x1 zboże, x1 masło i x1 sól) w całej osadzie i zanieś je do młyna (strefa 2, oraz zdaj raport sołtysowi).", exp: 190, coins: 160 },
+        { title: "Lista Towarów", desc: "Kupiec zgubił spis swoich towarów. Odtwórz go w 100% na podstawie porozrzucanych nazw towarów i pokaż je sołtysowi.", exp: 175, coins: 145 },
+        { title: "Lista Zakupów", desc: "Kupiec przyjechał do wioski z egzotycznymi towarami. Przygotuj listę pięciu najbardziej opłacalnych rzeczy i pokaż ją pasterce.", exp: 165, coins: 135 }
+    ],
+    "B": [
+        { title: "Trochę Ruchu", desc: "Rozgrzewka, wykonaj energicznie 10 przysiadów w wyznaczonym miejscu.", exp: 310, coins: 270 },
+        { title: "Kradzież Flagi", desc: "Ktoś bezczelnie zabrał flagę wioski. Poszukaj wskazówek i ustal, gdzie została ukryta. Raport zdaj sołtysowi.", exp: 340, coins: 300 },
+        { title: "Hasło do Magazynu", desc: "Młynarz w ferworze pracy zapomniał skomplikowanego hasła do swojego magazynu. Rozwiąż zagadkę logiczną z kartki.", exp: 330, coins: 290 },
+        { title: "Miniaturowa Kuźnia", desc: "Zbuduj w pełni działający model miniaturowej kuźni w Waszej wiosce z zakupionych materiałów.", exp: 360, coins: 320 }
+    ],
+    "A": [
+        { title: "Zapasowy Konwój", desc: "Dostarcz niezwykle ważny i wrażliwy towar od sołtysa do pasterki bez upuszczania go (piłka pingpongowa na łyżce trzymanej w buzi).", exp: 600, coins: 550 },
+        { title: "Inżynieria Wozu", desc: "Zbuduj stabilny model wozu kupieckiego w waszej wiosce z zakupionych materiałów.", exp: 620, coins: 580 },
+        { title: "Flaga dla Wioski", desc: "Wioska pilnie potrzebuje własnej, unikalnej flagi. Zaprojektuj, stwórz i zaprezentuj ją pasterce oraz sołtysowi.", exp: 580, coins: 520 }
+    ],
+    "S": [
+        { title: "Logistyka Weselna", desc: "W wiosce odbędzie się królewskie wesele. Zaplanuj przygotowanie dekoracji całego placu głównego oraz zaprezentuj je sołtysowi.", exp: 1200, coins: 1400 },
+        { title: "Wielki Wyścig Przełajowy", desc: "Mieszkańcy chcą zorganizować legendarny wyścig. Wyznacz trudną trasę z przeszkodami po schronie i zaprezentuj plan pasterce.", exp: 1100, coins: 1300 }
+    ]
+};
         const MAX_QUESTS = 20;
 
         /* ==========================================================================
