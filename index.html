@@ -145,16 +145,16 @@
 
         .quest-title {
             font-family: 'Cinzel', serif;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 800;
             color: #1a0f07;
             margin-bottom: 2px;
-            padding-right: 25px;
+            padding-right: 22px;
             border-bottom: 1px dashed rgba(60, 35, 15, 0.4);
             padding-bottom: 2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            /* Poprawka zawijania długiego tytułu */
+            white-space: normal;
+            word-break: break-word;
         }
 
         .quest-number {
@@ -163,37 +163,38 @@
         }
 
         .quest-desc {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             line-height: 1.15;
             color: #2b1a10;
             margin-bottom: 2px;
             flex-grow: 1;
             overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+            /* Usunięto ograniczenie do 2 linijek – teraz tekst zawija się i mieści w całości */
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .quest-rewards {
             display: flex;
             justify-content: space-between;
             font-weight: 600;
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             border-top: 1px solid rgba(60, 35, 15, 0.25);
-            padding-top: 3px;
+            padding-top: 2px;
         }
 
         .reward-exp { color: #113a5c; }
         .reward-gold { color: #7a5f05; text-shadow: 0 0 1px rgba(0,0,0,0.2); }
 
         .quest-status-badge {
-            margin-top: 3px;
+            margin-top: 2px;
             background: linear-gradient(to bottom, #960000, #5c0000);
             color: #fff;
             text-align: center;
-            padding: 2px;
+            padding: 1px;
             font-family: 'Cinzel', serif;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             border-radius: 2px;
             letter-spacing: 0.5px;
             white-space: nowrap;
@@ -599,51 +600,51 @@
            === BAZA ZADAŃ (SZABLONY Z TYTUŁAMI I OPISAMI) ===
            ========================================================================== */
 
-const QUEST_TEMPLATES = {
-    "F": [
-        { title: "Zagubione Guziki", desc: "Krawiec zgubił małe guziki w trawie. Znajdź dokładnie dziesięć i przynieś je sołtysowi.", exp: 30, coins: 15 },
-        { title: "Zgubiona Sakiewka", desc: "Znajdź ukryte banknoty, które wypadły z sakiewki roztrzepanego kupca i oddaj je pasterce.", exp: 35, coins: 20 },
-        { title: "Projekt Naczynia", desc: "Garncarz potrzebuje unikalnego projektu nowego naczynia glinianego. Narysuj go szczegółowo oraz oddaj sołtysowi.", exp: 30, coins: 18 },
-        { title: "Tajemnicza Wiadomość", desc: "Ktoś zostawił zaszyfrowaną wiadomość pod drzwiami sołtysa. Rozszyfruj ją.", exp: 40, coins: 25 },
-        { title: "Nazwy na Mapie", desc: "Na starej mapie brakuje trzech nazw ulic. Dopasuj je poprawnie do właściwych miejsc.", exp: 35, coins: 20 },
-        { title: "Imię dla Karczmy", desc: "Wymyśl chwytliwą i klimatyczną nazwę dla nowo otwieranego lokalu.", exp: 25, coins: 12 },
-        { title: "Zaginiony Dokument", desc: "Sołtys zgubił ważny dokument. Odnajdź go i dostarcz do jego domu.", exp: 35, coins: 20 },
-        { title: "Uciekinier z Dachu", desc: "Uciekł kot gospodyni. Znajdź go i bezpiecznie odprowadź do właścicielki.", exp: 30, coins: 18 },
-        { title: "Worki z Mąką", desc: "Młynarz potrzebuje pomocy przy przeniesieniu worków z mąką.", exp: 30, coins: 15 },
-        { title: "Zgubione Listy", desc: "Listonosz zgubił kilka listów. Odnajdź wszystkie ukryte przesyłki.", exp: 40, coins: 22 }
-    ],
-    "D": [
-        { title: "Sortowanie Drewna", desc: "Stolarz zamówił deski o ściśle określonych długościach. Dokładnie posegreguj patyczki/materiały.", exp: 75, coins: 50 },
-        { title: "Dostawa Towarów", desc: "Pasterka potrzebuje pomocy w bezpiecznym przewiezieniu towarów na tętniący życiem targ (strefa 4).", exp: 80, coins: 60 },
-        { title: "Trzy Przesyłki", desc: "Dostarcz trzy poufne paczki do różnych, oddalonych od siebie miejsc odbioru (strefa 3, 1 i 5).", exp: 85, coins: 65 },
-        { title: "Kupiecki Cennik", desc: "Kupiec w wyniku chaosu pomylił ceny wszystkich swoich produktów. Uporządkuj i przelicz cennik (łącznie do 300 monet).", exp: 70, coins: 55 },
-        { title: "Wypad do Karczmy", desc: "Przygotuj krótką, rytmiczną przyśpiewkę, którą mieszkańcy będą śpiewać podczas nadchodzącego święta i zaprezentuj ją pasterce.", exp: 75, coins: 50 },
-        { title: "Szyld dla Kowala", desc: "Kowal potrzebuje pomocy w zaprojektowaniu i wykonaniu artystycznego szyldu swojego warsztatu. Po wykonaniu pokaż go sołtysowi.", exp: 90, coins: 70 },
-        { title: "Nieposłuszne Narzędzia", desc: "Kowal potrzebuje pomocy w posegregowaniu swoich narzędzi.", exp: 75, coins: 50 }
-    ],
-    "C": [
-        { title: "Zaginione Buty", desc: "Szewc zgubił latarkę w labiryncie zaułków. Odnajdź ją i przekaż pasterce.", exp: 160, coins: 130 },
-        { title: "Wzór Tkacki", desc: "Tkaczka potrzebuje skomplikowanej pomocy w wykonaniu unikalnego, geometrycznego wzoru na materiał. Narysuj sześciokąt oraz pięciokąt.", exp: 180, coins: 150 },
-        { title: "Zaginiona Receptura", desc: "Zaginęła starożytna receptura na najlepszy chleb w królestwie. Znajdź ukryte składniki (x1 zboże, x1 masło i x1 sól) w całej osadzie i zanieś je sołtysowi.", exp: 190, coins: 160 },
-        { title: "Lista Towarów", desc: "Kupiec zgubił spis swoich towarów. Odtwórz go w 100% na podstawie porozrzucanych nazw towarów i pokaż je sołtysowi.", exp: 175, coins: 145 },
-        { title: "Lista Zakupów", desc: "Kupiec przyjechał do wioski z egzotycznymi towarami. Przygotuj listę pięciu najbardziej opłacalnych rzeczy i pokaż ją pasterce.", exp: 165, coins: 135 }
-    ],
-    "B": [
-        { title: "Trochę Ruchu", desc: "Rozgrzewka, wykonaj energicznie 10 przysiadów w wyznaczonym miejscu.", exp: 310, coins: 270 },
-        { title: "Kradzież Flagi", desc: "Ktoś bezczelnie zabrał flagę wioski. Przesłuchaj świadków i ustal, gdzie została ukryta. Raport zdaj sołtysowi.", exp: 340, coins: 300 },
-        { title: "Hasło do Magazynu", desc: "Młynarz w ferworze pracy zapomniał skomplikowanego hasła do swojego magazynu. Rozwiąż zagadkę logiczną z kartki.", exp: 330, coins: 290 },
-        { title: "Miniaturowa Kuźnia", desc: "Zbuduj w pełni działający model miniaturowej kuźni w Waszej wiosce z zakupionych materiałów.", exp: 360, coins: 320 }
-    ],
-    "A": [
-        { title: "Zapasowy Konwój", desc: "Dostarcz niezwykle ważny i wrażliwy towar od sołtysa do pasterki bez upuszczania go (piłka pingpongowa na łyżce trzymanej w buzi).", exp: 600, coins: 550 },
-        { title: "Inżynieria Wozu", desc: "Zbuduj stabilny model wozu kupieckiego z zakupionych materiałów.", exp: 620, coins: 580 },
-        { title: "Flaga dla Wioski", desc: "Wioska pilnie potrzebuje własnej, unikalnej flagi. Zaprojektuj, stwórz i zaprezentuj ją pasterce oraz sołtysowi.", exp: 580, coins: 520 }
-    ],
-    "S": [
-        { title: "Logistyka Weselna", desc: "W wiosce odbędzie się królewskie wesele. Zaplanuj przygotowanie dekoracji całego placu głównego oraz zaprezentuj je sołtysowi.", exp: 1200, coins: 1400 },
-        { title: "Wielki Wyścig Przełajowy", desc: "Mieszkańcy chcą zorganizować legendarny wyścig. Wyznacz trudną trasę z przeszkodami i zaprezentuj jej plan pasterce.", exp: 1100, coins: 1300 }
-    ]
-};
+        const QUEST_TEMPLATES = {
+            "F": [
+                { title: "Zagubione Guziki", desc: "Krawiec zgubił małe guziki w trawie. Znajdź dokładnie dziesięć i przynieś je sołtysowi.", exp: 30, coins: 15 },
+                { title: "Zgubiona Sakiewka", desc: "Znajdź ukryte banknoty, które wypadły z sakiewki roztrzepanego kupca i oddaj je pasterce.", exp: 35, coins: 20 },
+                { title: "Projekt Naczynia", desc: "Garncarz potrzebuje unikalnego projektu nowego naczynia glinianego. Narysuj go szczegółowo oraz oddaj sołtysowi.", exp: 30, coins: 18 },
+                { title: "Tajemnicza Wiadomość", desc: "Ktoś zostawił zaszyfrowaną wiadomość pod drzwiami sołtysa. Rozszyfruj ją.", exp: 40, coins: 25 },
+                { title: "Nazwy na Mapie", desc: "Na starej mapie brakuje trzech nazw ulic. Dopasuj je poprawnie do właściwych miejsc.", exp: 35, coins: 20 },
+                { title: "Imię dla Karczmy", desc: "Wymyśl chwytliwą i klimatyczną nazwę dla nowo otwieranego lokalu.", exp: 25, coins: 12 },
+                { title: "Zaginiony Dokument", desc: "Sołtys zgubił ważny dokument. Odnajdź go i dostarcz do jego domu.", exp: 35, coins: 20 },
+                { title: "Uciekinier z Dachu", desc: "Uciekł kot gospodyni. Znajdź go i bezpiecznie odprowadź do właścicielki.", exp: 30, coins: 18 },
+                { title: "Worki z Mąką", desc: "Młynarz potrzebuje pomocy przy przeniesieniu worków z mąką.", exp: 30, coins: 15 },
+                { title: "Zgubione Listy", desc: "Listonosz zgubił kilka listów. Odnajdź wszystkie ukryte przesyłki.", exp: 40, coins: 22 }
+            ],
+            "D": [
+                { title: "Sortowanie Drewna", desc: "Stolarz zamówił deski o ściśle określonych długościach. Dokładnie posegreguj patyczki/materiały.", exp: 75, coins: 50 },
+                { title: "Dostawa Towarów", desc: "Pasterka potrzebuje pomocy w bezpiecznym przewiezieniu towarów na tętniący życiem targ (strefa 4).", exp: 80, coins: 60 },
+                { title: "Trzy Przesyłki", desc: "Dostarcz trzy poufne paczki do różnych, oddalonych od siebie miejsc odbioru (strefa 3, 1 i 5).", exp: 85, coins: 65 },
+                { title: "Kupiecki Cennik", desc: "Kupiec w wyniku chaosu pomylił ceny wszystkich swoich produktów. Uporządkuj i przelicz cennik (łącznie do 300 monet).", exp: 70, coins: 55 },
+                { title: "Wypad do Karczmy", desc: "Przygotuj krótką, rytmiczną przyśpiewkę, którą mieszkańcy będą śpiewać podczas nadchodzącego święta i zaprezentuj ją pasterce.", exp: 75, coins: 50 },
+                { title: "Szyld dla Kowala", desc: "Kowal potrzebuje pomocy w zaprojektowaniu i wykonaniu artystycznego szyldu swojego warsztatu. Po wykonaniu pokaż go sołtysowi.", exp: 90, coins: 70 },
+                { title: "Nieposłuszne Narzędzia", desc: "Kowal potrzebuje pomocy w posegregowaniu swoich narzędzi.", exp: 75, coins: 50 }
+            ],
+            "C": [
+                { title: "Zaginione Buty", desc: "Szewc zgubił latarkę w labiryncie zaułków. Odnajdź ją i przekaż pasterce.", exp: 160, coins: 130 },
+                { title: "Wzór Tkacki", desc: "Tkaczka potrzebuje skomplikowanej pomocy w wykonaniu unikalnego, geometrycznego wzoru na materiał. Narysuj sześciokąt oraz pięciokąt.", exp: 180, coins: 150 },
+                { title: "Zaginiona Receptura", desc: "Zaginęła starożytna receptura na najlepszy chleb w królestwie. Znajdź ukryte składniki (x1 zboże, x1 masło i x1 sól) w całej osadzie i zanieś je sołtysowi.", exp: 190, coins: 160 },
+                { title: "Lista Towarów", desc: "Kupiec zgubił spis swoich towarów. Odtwórz go w 100% na podstawie porozrzucanych nazw towarów i pokaż je sołtysowi.", exp: 175, coins: 145 },
+                { title: "Lista Zakupów", desc: "Kupiec przyjechał do wioski z egzotycznymi towarami. Przygotuj listę pięciu najbardziej opłacalnych rzeczy i pokaż ją pasterce.", exp: 165, coins: 135 }
+            ],
+            "B": [
+                { title: "Trochę Ruchu", desc: "Rozgrzewka, wykonaj energicznie 10 przysiadów w wyznaczonym miejscu.", exp: 310, coins: 270 },
+                { title: "Kradzież Flagi", desc: "Ktoś bezczelnie zabrał flagę wioski. Przesłuchaj świadków i ustal, gdzie została ukryta. Raport zdaj sołtysowi.", exp: 340, coins: 300 },
+                { title: "Hasło do Magazynu", desc: "Młynarz w ferworze pracy zapomniał skomplikowanego hasła do swojego magazynu. Rozwiąż zagadkę logiczną z kartki.", exp: 330, coins: 290 },
+                { title: "Miniaturowa Kuźnia", desc: "Zbuduj w pełni działający model miniaturowej kuźni w Waszej wiosce z zakupionych materiałów.", exp: 360, coins: 320 }
+            ],
+            "A": [
+                { title: "Zapasowy Konwój", desc: "Dostarcz niezwykle ważny i wrażliwy towar od sołtysa do pasterki bez upuszczania go (piłka pingpongowa na łyżce trzymanej w buzi).", exp: 600, coins: 550 },
+                { title: "Inżynieria Wozu", desc: "Zbuduj stabilny model wozu kupieckiego z zakupionych materiałów.", exp: 620, coins: 580 },
+                { title: "Flaga dla Wioski", desc: "Wioska pilnie potrzebuje własnej, unikalnej flagi. Zaprojektuj, stwórz i zaprezentuj ją pasterce oraz sołtysowi.", exp: 580, coins: 520 }
+            ],
+            "S": [
+                { title: "Logistyka Weselna", desc: "W wiosce odbędzie się królewskie wesele. Zaplanuj przygotowanie dekoracji całego placu głównego oraz zaprezentuj je sołtysowi.", exp: 1200, coins: 1400 },
+                { title: "Wielki Wyścig Przełajowy", desc: "Mieszkańcy chcą zorganizować legendarny wyścig. Wyznacz trudną trasę z przeszkodami i zaprezentuj jej plan pasterce.", exp: 1100, coins: 1300 }
+            ]
+        };
 
         const MAX_QUESTS = 20;
 
@@ -666,7 +667,6 @@ const QUEST_TEMPLATES = {
 
         let players = JSON.parse(localStorage.getItem('guild_players')) || [];
         let quests = JSON.parse(localStorage.getItem('guild_quests')) || [];
-        // Globalny licznik wygenerowanych zadań (A1..A9 -> B1..B9 -> C1 itd.)
         let questSequence = parseInt(localStorage.getItem('guild_quest_sequence')) || 0;
 
         let selectedQuestId = null;
@@ -676,7 +676,7 @@ const QUEST_TEMPLATES = {
             questSequence++;
             const letterIndex = Math.floor((questSequence - 1) / 9);
             const digit = ((questSequence - 1) % 9) + 1;
-            const letter = String.fromCharCode(65 + (letterIndex % 26)); // A, B, C...
+            const letter = String.fromCharCode(65 + (letterIndex % 26));
             return `${letter}${digit}`;
         }
 
@@ -721,7 +721,7 @@ const QUEST_TEMPLATES = {
 
             return {
                 id: Date.now() + Math.floor(Math.random() * 100000),
-                number: getNextQuestNumber(), // Stały numer: A1..A9, B1..B9 itd.
+                number: getNextQuestNumber(),
                 title: template.title,
                 description: template.desc,
                 rank: rank,
@@ -732,7 +732,6 @@ const QUEST_TEMPLATES = {
         }
 
         function ensureQuestLimit() {
-            // Uzupełniamy brakujące numery w starych zadaniach z pamięci, jeśli jakieś były
             quests.forEach(q => {
                 if (!q.number) {
                     q.number = getNextQuestNumber();
