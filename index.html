@@ -318,6 +318,13 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .group-container:hover {
+            border-color: #85c1e9;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
         }
 
         .group-header-info {
@@ -613,7 +620,7 @@
         </div>
     </div>
 
-    <!-- MODAL 4: EDYCJA MONET -->
+    <!-- MODAL 4: EDYCJA MONET (DLA GRACZA LUB GRUPY) -->
     <div class="modal-overlay" id="editCoinsModal">
         <div class="modal-box">
             <h3 id="editCoinsPlayerName">Zarządzaj monetami</h3>
@@ -740,7 +747,8 @@
         let questSequence = parseInt(localStorage.getItem('guild_quest_sequence')) || 0;
 
         let selectedQuestId = null;
-        let selectedPlayerIdForCoins = null;
+        let selectedEntityIdForCoins = null;
+        let isEntityGroup = false;
 
         function getNextQuestNumber() {
             questSequence++;
@@ -892,6 +900,12 @@
             groups.forEach(group => {
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'group-container';
+                // KLIKNIĘCIE W GRUPĘ OTWIERA ZARZĄDZANIE MONETAMI GRUPY
+                groupDiv.onclick = (e) => {
+                    // Ignoruj kliknięcie, jeśli kliknięto bezpośrednio w tabliczkę gracza wewnątrz grupy
+                    if (e.target.closest('.player-plaque')) return;
+                    openEditCoinsModal(group.id, true);
+                };
 
                 const nextThreshold = RANK_THRESHOLDS[group.rank];
                 let progressPercent = 100;
@@ -945,7 +959,10 @@
                 plaque.style.background = 'linear-gradient(145deg, #2b1c12, #140b07)';
                 plaque.style.border = '1px solid #7a5f28';
             }
-            plaque.onclick = () => openEditCoinsModal(player.id);
+            plaque.onclick = (e) => {
+                e.stopPropagation(); // Zapobiega wywołaniu kliknięcia grupy w tle
+                openEditCoinsModal(player.id, false);
+            };
             plaque.innerHTML = `
                 <div class="player-top">
                     <span class="player-name">${player.name}</span>
@@ -1176,10 +1193,20 @@
             closeModals();
         }
 
-        function openEditCoinsModal(playerId) {
-            selectedPlayerIdForCoins = playerId;
-            const player = players.find(p => p.id === playerId);
-            document.getElementById('editCoinsPlayerName').innerText = `Monety: ${player.name}`;
+        function openEditCoinsModal(id, isGroup = false) {
+            selectedEntityIdForCoins = id;
+            isEntityGroup = isGroup;
+
+            let entityName = '';
+            if (isGroup) {
+                const group = groups.find(g => g.id === id);
+                entityName = `Grupa: ${group.name}`;
+            } else {
+                const player = players.find(p => p.id === id);
+                entityName = player.name;
+            }
+
+            document.getElementById('editCoinsPlayerName').innerText = `Monety: ${entityName}`;
             document.getElementById('coinsAmountInput').value = '';
             document.getElementById('editCoinsModal').style.display = 'flex';
             document.getElementById('coinsAmountInput').focus();
@@ -1194,10 +1221,18 @@
                 return;
             }
 
-            const player = players.find(p => p.id === selectedPlayerIdForCoins);
-            if (player) {
-                player.coins = Math.max(0, player.coins - val);
-                renderAll();
+            if (isEntityGroup) {
+                const group = groups.find(g => g.id === selectedEntityIdForCoins);
+                if (group) {
+                    group.coins = Math.max(0, group.coins - val);
+                    renderAll();
+                }
+            } else {
+                const player = players.find(p => p.id === selectedEntityIdForCoins);
+                if (player) {
+                    player.coins = Math.max(0, player.coins - val);
+                    renderAll();
+                }
             }
             closeModals();
         }
