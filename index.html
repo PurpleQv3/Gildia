@@ -152,7 +152,6 @@
             padding-right: 22px;
             border-bottom: 1px dashed rgba(60, 35, 15, 0.4);
             padding-bottom: 2px;
-            /* Poprawka zawijania długiego tytułu */
             white-space: normal;
             word-break: break-word;
         }
@@ -169,7 +168,6 @@
             margin-bottom: 2px;
             flex-grow: 1;
             overflow: hidden;
-            /* Usunięto ograniczenie do 2 linijek – teraz tekst zawija się i mieści w całości */
             white-space: normal;
             word-break: break-word;
             overflow-wrap: break-word;
@@ -206,7 +204,7 @@
         /* ================= PANEL GRACZY (PRAWA STRONA) ================= */
         .players-panel {
             flex: 1;
-            min-width: 290px;
+            min-width: 310px;
             max-width: 450px;
             background: linear-gradient(135deg, #2b170d, #140b06);
             border: 6px solid #0d0603;
@@ -237,11 +235,11 @@
 
         .panel-actions-top {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
         }
 
-        .btn-refresh-quests {
+        .btn-refresh-quests, .btn-group-mode {
             background: linear-gradient(to bottom, #593520, #3b2214);
             color: var(--gold-light);
             border: 1px solid var(--gold);
@@ -254,7 +252,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
-        .btn-refresh-quests:hover {
+        .btn-refresh-quests:hover, .btn-group-mode:hover {
             background: linear-gradient(to bottom, #73462b, #4a2e1b);
             border-color: #fff;
             transform: scale(1.02);
@@ -282,12 +280,12 @@
         }
 
         .players-list {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-auto-rows: 1fr;
+            display: flex;
+            flex-direction: column;
             gap: 6px;
             flex: 1;
-            overflow: hidden;
+            overflow-y: auto;
+            padding-right: 2px;
         }
 
         .player-plaque {
@@ -302,7 +300,6 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            overflow: hidden;
             position: relative;
         }
 
@@ -310,6 +307,35 @@
             border-color: var(--gold-light);
             transform: scale(1.01);
             box-shadow: 0 6px 12px rgba(0,0,0,0.9);
+        }
+
+        /* Styl ramki grupy */
+        .group-container {
+            border: 2px dashed #3498db;
+            background: rgba(20, 35, 55, 0.4);
+            border-radius: 6px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .group-header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 30, 48, 0.8);
+            padding: 4px 6px;
+            border-radius: 3px;
+            border: 1px solid #3498db;
+        }
+
+        .group-name {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #85c1e9;
+            text-shadow: 1px 1px 2px #000;
         }
 
         .player-top {
@@ -321,7 +347,7 @@
 
         .player-name {
             font-family: 'Cinzel', serif;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: #fff;
             white-space: nowrap;
@@ -337,21 +363,21 @@
             font-weight: 800;
             padding: 1px 5px;
             border-radius: 3px;
-            font-size: 0.68rem;
+            font-size: 0.65rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
 
         .player-stats {
             display: flex;
             justify-content: space-between;
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             margin-bottom: 2px;
             color: #e2c999;
         }
 
         .exp-bar-container {
             width: 100%;
-            height: 6px;
+            height: 5px;
             background: #0d0603;
             border-radius: 3px;
             overflow: hidden;
@@ -367,7 +393,6 @@
         }
 
         .no-players-msg {
-            grid-column: 1 / -1;
             color: #b5987c;
             text-align: center;
             font-style: italic;
@@ -470,6 +495,7 @@
             margin-bottom: 12px;
             max-height: 180px;
             overflow-y: auto;
+            text-align: left;
         }
 
         .player-select-btn {
@@ -495,6 +521,20 @@
             opacity: 0.5;
             cursor: not-allowed;
             border-color: #999;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px;
+            background: var(--parchment-dark);
+            border: 1px solid var(--wood-medium);
+            border-radius: 4px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--ink);
         }
 
         input[type="text"], input[type="number"] {
@@ -528,6 +568,7 @@
             <div class="panel-header">
                 <h2>🛡️ Awanturnicy</h2>
                 <div class="panel-actions-top">
+                    <button class="btn-group-mode" id="groupModeBtn" title="Zarządzaj grupami" onclick="openGroupModal()" style="display:none;">👥 Grupa</button>
                     <button class="btn-refresh-quests" title="Zresetuj zadania na tablicy za 200 monet" onclick="openResetQuestsModal()">🔄 Odśwież</button>
                     <button class="btn-add-player" title="Dodaj nowego gracza" onclick="openAddPlayerModal()">+</button>
                 </div>
@@ -549,11 +590,11 @@
         </div>
     </div>
 
-    <!-- MODAL 2: WYBÓR GRACZA DO AKCEPTACJI -->
+    <!-- MODAL 2: WYBÓR GRACZA/GRUPY DO AKCEPTACJI -->
     <div class="modal-overlay" id="assignModal">
         <div class="modal-box">
             <h3>Kto podejmuje się zlecenia?</h3>
-            <p style="font-size: 0.85rem;">Gracz może przyjąć zadanie ze swojej rangi lub maksymalnie o jedną wyżej.</p>
+            <p style="font-size: 0.85rem;" id="assignModalSub">Wybierz gracza lub grupę.</p>
             <div class="player-select-list" id="playerSelectList"></div>
             <button class="btn btn-cancel" onclick="closeModals()">Anuluj</button>
         </div>
@@ -589,9 +630,36 @@
     <div class="modal-overlay" id="resetQuestsModal">
         <div class="modal-box">
             <h3>Odświeżenie Tablicy Zleceń</h3>
-            <p style="font-size: 0.85rem;">Koszt opłacenia gońca i nowych plotek to <strong>200 monet</strong>. Wybierz gracza, który pokryje koszt (zadania w toku zostaną nienaruszone):</p>
+            <p style="font-size: 0.85rem;">Koszt opłacenia gońca i nowych plotek to <strong>200 monet</strong>. Wybierz gracza/grupę, która pokryje koszt:</p>
             <div class="player-select-list" id="resetQuestsPlayerList"></div>
             <button class="btn btn-cancel" onclick="closeModals()">Anuluj</button>
+        </div>
+    </div>
+
+    <!-- MODAL 6: WYBÓR TRYBU GRY (PO RESECIE) -->
+    <div class="modal-overlay" id="gameModeModal" style="display:flex;">
+        <div class="modal-box">
+            <h3>Wybierz tryb gry</h3>
+            <p>W jaki sposób chcesz prowadzić swoją gildizę?</p>
+            <div class="modal-buttons" style="flex-direction: column; gap: 8px;">
+                <button class="btn btn-accept" style="width: 100%;" onclick="setGameMode('solo')">Tryb Jednoosobowy</button>
+                <button class="btn btn-accept" style="width: 100%; background: #1b4f72;" onclick="setGameMode('group')">Tryb Grupowy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 7: TWORZENIE GRUPY -->
+    <div class="modal-overlay" id="createGroupModal">
+        <div class="modal-box">
+            <h3>Utwórz Nową Grupę</h3>
+            <p style="font-size: 0.85rem;">Zaznacz graczy, którzy mają wejść w skład grupy:</p>
+            <div class="player-select-list" id="groupCheckboxesList" style="max-height: 140px;"></div>
+            <p style="font-size: 0.85rem; margin-top: 6px;">Nazwa grupy:</p>
+            <input type="text" id="groupNameInput" placeholder="Np. Drużyna Pierścienia...">
+            <div class="modal-buttons">
+                <button class="btn btn-accept" onclick="confirmCreateGroup()">Utwórz</button>
+                <button class="btn btn-cancel" onclick="closeModals()">Anuluj</button>
+            </div>
         </div>
     </div>
 
@@ -601,50 +669,51 @@
            ========================================================================== */
 
         const QUEST_TEMPLATES = {
-    "F": [
-        { title: "Zagubione Guziki", desc: "Krawiec zgubił małe guziki w trawie. Znajdź dokładnie dziesięć i przynieś je sołtysowi.", exp: 30, coins: 15 },
-        { title: "Zgubiona Sakiewka", desc: "Znajdź ukryte banknoty, które wypadły z sakiewki roztrzepanego kupca i oddaj je pasterce.", exp: 35, coins: 20 },
-        { title: "Projekt Naczynia", desc: "Garncarz potrzebuje unikalnego projektu nowego naczynia glinianego. Narysuj go szczegółowo oraz oddaj sołtysowi.", exp: 30, coins: 18 },
-        { title: "Tajemnicza Wiadomość", desc: "Ktoś zostawił zaszyfrowaną wiadomość pod drzwiami sołtysa. Rozszyfruj ją.", exp: 40, coins: 25 },
-        { title: "Nazwy na Mapie", desc: "Na starej mapie brakuje trzech nazw ulic. Dopasuj je poprawnie do właściwych miejsc.", exp: 35, coins: 20 },
-        { title: "Imię dla Karczmy", desc: "Wymyśl chwytliwą i klimatyczną nazwę dla nowo otwieranego lokalu.", exp: 25, coins: 12 },
-        { title: "Zaginiony Dokument", desc: "Sołtys zgubił ważny dokument. Odnajdź go i dostarcz do jego domu (strefa 4).", exp: 35, coins: 20 },
-        { title: "Uciekinier z Dachu", desc: "Uciekł kot gospodyni. Znajdź go i bezpiecznie odprowadź do właścicielki (strefa 1, oraz zdaj raport pasterce).", exp: 30, coins: 18 },
-        { title: "Worki z Mąką", desc: "Młynarz potrzebuje pomocy przy przeniesieniu worków z mąką (Przenieś 3 worki atletyczne, strefa 5 -> 2).", exp: 30, coins: 15 },
-        { title: "Zgubione Listy", desc: "Listonosz zgubił kilka listów. Odnajdź je wszystkie, zanieś do budynku poczty (strefa 3, oraz zdaj raport pasterce).", exp: 40, coins: 22 }
-    ],
-    "D": [
-        { title: "Sortowanie Drewna", desc: "Stolarz zamówił deski o ściśle określonych długościach. Dokładnie posegreguj patyczki/materiały.", exp: 75, coins: 50 },
-        { title: "Dostawa Towarów", desc: "Pasterka potrzebuje pomocy w bezpiecznym przewiezieniu towarów na tętniący życiem targ (strefa 4).", exp: 80, coins: 60 },
-        { title: "Trzy Przesyłki", desc: "Dostarcz trzy poufne i paczki od sołtysa do różnych, oddalonych od siebie miejsc odbioru (strefa 3, 1 i 2).", exp: 85, coins: 65 },
-        { title: "Kupiecki Cennik", desc: "Kupiec w wyniku chaosu pomylił ceny wszystkich swoich produktów. Uporządkuj i przelicz cennik oraz zaprezentuj go sołtysowi.", exp: 70, coins: 55 },
-        { title: "Wypad do Karczmy", desc: "Przygotuj krótką, rytmiczną przyśpiewkę, którą mieszkańcy będą śpiewać podczas nadchodzącego święta i zaprezentuj ją pasterce.", exp: 75, coins: 50 },
-        { title: "Szyld dla Kowala", desc: "Kowal potrzebuje pomocy w zaprojektowaniu i wykonaniu artystycznego szyldu swojego warsztatu. Po wykonaniu pokaż go sołtysowi.", exp: 90, coins: 70 },
-        { title: "Nieposłuszne Narzędzia", desc: "Kowal potrzebuje pomocy w posegregowaniu swoich narzędzi (strefa 1).", exp: 75, coins: 50 }
-    ],
-    "C": [
-        { title: "Zaginione Buty", desc: "Szewc zgubił latarkę w labiryncie zaułków. Odnajdź ją i przekaż pasterce.", exp: 160, coins: 130 },
-        { title: "Wzór Tkacki", desc: "Tkaczka potrzebuje skomplikowanej pomocy w wykonaniu unikalnego, geometrycznego wzoru na materiał. Narysuj sześciokąt oraz pięciokąt. Zaprezentuj sołtysowi.", exp: 180, coins: 150 },
-        { title: "Zaginiona Receptura", desc: "Zaginęła starożytna receptura na najlepszy chleb w królestwie. Znajdź ukryte składniki (x1 zboże, x1 masło i x1 sól) w całej osadzie i zanieś je do młyna (strefa 2, oraz zdaj raport sołtysowi).", exp: 190, coins: 160 },
-        { title: "Lista Towarów", desc: "Kupiec zgubił spis swoich towarów. Odtwórz go w 100% na podstawie porozrzucanych nazw towarów i pokaż je sołtysowi.", exp: 175, coins: 145 },
-        { title: "Lista Zakupów", desc: "Kupiec przyjechał do wioski z egzotycznymi towarami. Przygotuj listę pięciu najbardziej opłacalnych rzeczy i pokaż ją pasterce.", exp: 165, coins: 135 }
-    ],
-    "B": [
-        { title: "Trochę Ruchu", desc: "Rozgrzewka, wykonaj energicznie 10 przysiadów w wyznaczonym miejscu.", exp: 310, coins: 270 },
-        { title: "Kradzież Flagi", desc: "Ktoś bezczelnie zabrał flagę wioski. Poszukaj wskazówek i ustal, gdzie została ukryta. Raport zdaj sołtysowi.", exp: 340, coins: 300 },
-        { title: "Hasło do Magazynu", desc: "Młynarz w ferworze pracy zapomniał skomplikowanego hasła do swojego magazynu. Rozwiąż zagadkę logiczną z kartki.", exp: 330, coins: 290 },
-        { title: "Miniaturowa Kuźnia", desc: "Zbuduj w pełni działający model miniaturowej kuźni w Waszej wiosce z zakupionych materiałów.", exp: 360, coins: 320 }
-    ],
-    "A": [
-        { title: "Zapasowy Konwój", desc: "Dostarcz niezwykle ważny i wrażliwy towar od sołtysa do pasterki bez upuszczania go (piłka pingpongowa na łyżce trzymanej w buzi).", exp: 600, coins: 550 },
-        { title: "Inżynieria Wozu", desc: "Zbuduj stabilny model wozu kupieckiego w waszej wiosce z zakupionych materiałów.", exp: 620, coins: 580 },
-        { title: "Flaga dla Wioski", desc: "Wioska pilnie potrzebuje własnej, unikalnej flagi. Zaprojektuj, stwórz i zaprezentuj ją pasterce oraz sołtysowi.", exp: 580, coins: 520 }
-    ],
-    "S": [
-        { title: "Logistyka Weselna", desc: "W wiosce odbędzie się królewskie wesele. Zaplanuj przygotowanie dekoracji całego placu głównego oraz zaprezentuj je sołtysowi.", exp: 1200, coins: 1400 },
-        { title: "Wielki Wyścig Przełajowy", desc: "Mieszkańcy chcą zorganizować legendarny wyścig. Wyznacz trudną trasę z przeszkodami po schronie i zaprezentuj plan pasterce.", exp: 1100, coins: 1300 }
-    ]
-};
+            "F": [
+                { title: "Zagubione Guziki", desc: "Krawiec zgubił małe guziki w trawie. Znajdź dokładnie dziesięć i przynieś je sołtysowi.", exp: 30, coins: 15 },
+                { title: "Zgubiona Sakiewka", desc: "Znajdź ukryte banknoty, które wypadły z sakiewki roztrzepanego kupca i oddaj je pasterce.", exp: 35, coins: 20 },
+                { title: "Projekt Naczynia", desc: "Garncarz potrzebuje unikalnego projektu nowego naczynia glinianego. Narysuj go szczegółowo oraz oddaj sołtysowi.", exp: 30, coins: 18 },
+                { title: "Tajemnicza Wiadomość", desc: "Ktoś zostawił zaszyfrowaną wiadomość pod drzwiami sołtysa. Rozszyfruj ją.", exp: 40, coins: 25 },
+                { title: "Nazwy na Mapie", desc: "Na starej mapie brakuje trzech nazw ulic. Dopasuj je poprawnie do właściwych miejsc.", exp: 35, coins: 20 },
+                { title: "Imię dla Karczmy", desc: "Wymyśl chwytliwą i klimatyczną nazwę dla nowo otwieranego lokalu.", exp: 25, coins: 12 },
+                { title: "Zaginiony Dokument", desc: "Sołtys zgubił ważny dokument. Odnajdź go i dostarcz do jego domu (strefa 4).", exp: 35, coins: 20 },
+                { title: "Uciekinier z Dachu", desc: "Uciekł kot gospodyni. Znajdź go i bezpiecznie odprowadź do właścicielki (strefa 1, oraz zdaj raport pasterce).", exp: 30, coins: 18 },
+                { title: "Worki z Mąką", desc: "Młynarz potrzebuje pomocy przy przeniesieniu worków z mąką (Przenieś 3 worki atletyczne, strefa 5 -> 2).", exp: 30, coins: 15 },
+                { title: "Zgubione Listy", desc: "Listonosz zgubił kilka listów. Odnajdź je wszystkie, zanieś do budynku poczty (strefa 3, oraz zdaj raport pasterce).", exp: 40, coins: 22 }
+            ],
+            "D": [
+                { title: "Sortowanie Drewna", desc: "Stolarz zamówił deski o ściśle określonych długościach. Dokładnie posegreguj patyczki/materiały.", exp: 75, coins: 50 },
+                { title: "Dostawa Towarów", desc: "Pasterka potrzebuje pomocy w bezpiecznym przewiezieniu towarów na tętniący życiem targ (strefa 4).", exp: 80, coins: 60 },
+                { title: "Trzy Przesyłki", desc: "Dostarcz trzy poufne i paczki od sołtysa do różnych, oddalonych od siebie miejsc odbioru (strefa 3, 1 i 2).", exp: 85, coins: 65 },
+                { title: "Kupiecki Cennik", desc: "Kupiec w wyniku chaosu pomylił ceny wszystkich swoich produktów. Uporządkuj i przelicz cennik oraz zaprezentuj go sołtysowi.", exp: 70, coins: 55 },
+                { title: "Wypad do Karczmy", desc: "Przygotuj krótką, rytmiczną przyśpiewkę, którą mieszkańcy będą śpiewać podczas nadchodzącego święta i zaprezentuj ją pasterce.", exp: 75, coins: 50 },
+                { title: "Szyld dla Kowala", desc: "Kowal potrzebuje pomocy w zaprojektowaniu i wykonaniu artystycznego szyldu swojego warsztatu. Po wykonaniu pokaż go sołtysowi.", exp: 90, coins: 70 },
+                { title: "Nieposłuszne Narzędzia", desc: "Kowal potrzebuje pomocy w posegregowaniu swoich narzędzi (strefa 1).", exp: 75, coins: 50 }
+            ],
+            "C": [
+                { title: "Zaginione Buty", desc: "Szewc zgubił latarkę w labiryncie zaułków. Odnajdź ją i przekaż pasterce.", exp: 160, coins: 130 },
+                { title: "Wzór Tkacki", desc: "Tkaczka potrzebuje skomplikowanej pomocy w wykonaniu unikalnego, geometrycznego wzoru na materiał. Narysuj sześciokąt oraz pięciokąt. Zaprezentuj sołtysowi.", exp: 180, coins: 150 },
+                { title: "Zaginiona Receptura", desc: "Zaginęła starożytna receptura na najlepszy chleb w królestwie. Znajdź ukryte składniki (x1 zboże, x1 masło i x1 sól) w całej osadzie i zanieś je do młyna (strefa 2, oraz zdaj raport sołtysowi).", exp: 190, coins: 160 },
+                { title: "Lista Towarów", desc: "Kupiec zgubił spis swoich towarów. Odtwórz go w 100% na podstawie porozrzucanych nazw towarów i pokaż je sołtysowi.", exp: 175, coins: 145 },
+                { title: "Lista Zakupów", desc: "Kupiec przyjechał do wioski z egzotycznymi towarami. Przygotuj listę pięciu najbardziej opłacalnych rzeczy i pokaż ją pasterce.", exp: 165, coins: 135 }
+            ],
+            "B": [
+                { title: "Trochę Ruchu", desc: "Rozgrzewka, wykonaj energicznie 10 przysiadów w wyznaczonym miejscu.", exp: 310, coins: 270 },
+                { title: "Kradzież Flagi", desc: "Ktoś bezczelnie zabrał flagę wioski. Poszukaj wskazówek i ustal, gdzie została ukryta. Raport zdaj sołtysowi.", exp: 340, coins: 300 },
+                { title: "Hasło do Magazynu", desc: "Młynarz w ferworze pracy zapomniał skomplikowanego hasła do swojego magazynu. Rozwiąż zagadkę logiczną z kartki.", exp: 330, coins: 290 },
+                { title: "Miniaturowa Kuźnia", desc: "Zbuduj w pełni działający model miniaturowej kuźni w Waszej wiosce z zakupionych materiałów.", exp: 360, coins: 320 }
+            ],
+            "A": [
+                { title: "Zapasowy Konwój", desc: "Dostarcz niezwykle ważny i wrażliwy towar od sołtysa do pasterki bez upuszczania go (piłka pingpongowa na łyżce trzymanej w buzi).", exp: 600, coins: 550 },
+                { title: "Inżynieria Wozu", desc: "Zbuduj stabilny model wozu kupieckiego w waszej wiosce z zakupionych materiałów.", exp: 620, coins: 580 },
+                { title: "Flaga dla Wioski", desc: "Wioska pilnie potrzebuje własnej, unikalnej flagi. Zaprojektuj, stwórz i zaprezentuj ją pasterce oraz sołtysowi.", exp: 580, coins: 520 }
+            ],
+            "S": [
+                { title: "Logistyka Weselna", desc: "W wiosce odbędzie się królewskie wesele. Zaplanuj przygotowanie dekoracji całego placu głównego oraz zaprezentuj je sołtysowi.", exp: 1200, coins: 1400 },
+                { title: "Wielki Wyścig Przełajowy", desc: "Mieszkańcy chcą zorganizować legendarny wyścig. Wyznacz trudną trasę z przeszkodami po schronie i zaprezentuj plan pasterce.", exp: 1100, coins: 1300 }
+            ]
+        };
+
         const MAX_QUESTS = 20;
 
         /* ==========================================================================
@@ -664,7 +733,9 @@
 
         const PINS = ["🗡️", "📌", "📍", "🗡️"];
 
+        let gameMode = localStorage.getItem('guild_game_mode') || null;
         let players = JSON.parse(localStorage.getItem('guild_players')) || [];
+        let groups = JSON.parse(localStorage.getItem('guild_groups')) || [];
         let quests = JSON.parse(localStorage.getItem('guild_quests')) || [];
         let questSequence = parseInt(localStorage.getItem('guild_quest_sequence')) || 0;
 
@@ -680,37 +751,49 @@
         }
 
         function saveData() {
+            localStorage.setItem('guild_game_mode', gameMode);
             localStorage.setItem('guild_players', JSON.stringify(players));
+            localStorage.setItem('guild_groups', JSON.stringify(groups));
             localStorage.setItem('guild_quests', JSON.stringify(quests));
             localStorage.setItem('guild_quest_sequence', questSequence.toString());
         }
 
         function resetData() {
             if (confirm("Czy na pewno chcesz zresetować i wyczyścić wszystkie dane?")) {
-                localStorage.removeItem('guild_players');
-                localStorage.removeItem('guild_quests');
-                localStorage.removeItem('guild_quest_sequence');
+                localStorage.clear();
                 players = [];
+                groups = [];
                 quests = [];
                 questSequence = 0;
-                ensureQuestLimit();
-                renderAll();
+                gameMode = null;
+                document.getElementById('gameModeModal').style.display = 'flex';
             }
         }
 
-        function getHighestPlayerRankIndex() {
-            if (players.length === 0) return 0;
+        function setGameMode(mode) {
+            gameMode = mode;
+            document.getElementById('gameModeModal').style.display = 'none';
+            document.getElementById('groupModeBtn').style.display = (gameMode === 'group') ? 'inline-block' : 'none';
+            ensureQuestLimit();
+            renderAll();
+        }
+
+        function getHighestRankIndex() {
             let highestIndex = 0;
             players.forEach(p => {
                 const idx = RANKS.indexOf(p.rank);
+                if (idx > highestIndex) highestIndex = idx;
+            });
+            groups.forEach(g => {
+                const idx = RANKS.indexOf(g.rank);
                 if (idx > highestIndex) highestIndex = idx;
             });
             return highestIndex;
         }
 
         function generateNewQuest() {
-            const maxPlayerRankIdx = getHighestPlayerRankIndex();
-            const allowedMaxIdx = Math.min(maxPlayerRankIdx + 1, RANKS.length - 1);
+            const maxRankIdx = getHighestRankIndex();
+            const allowedMaxIdx = Math.min(maxRankIdx + 1, RANKS.length - 1);
             
             const randomRankIdx = Math.floor(Math.random() * (allowedMaxIdx + 1));
             const rank = RANKS[randomRankIdx];
@@ -726,7 +809,8 @@
                 rank: rank,
                 exp: template.exp,
                 coins: template.coins,
-                assignedTo: null
+                assignedTo: null,
+                isGroupAssignment: false
             };
         }
 
@@ -752,11 +836,20 @@
                 card.onclick = () => openQuestModal(quest.id);
 
                 const pinIcon = PINS[index % PINS.length];
-                const assignedPlayer = players.find(p => p.id === quest.assignedTo);
+                let assignedName = null;
+                if (quest.assignedTo) {
+                    if (quest.isGroupAssignment) {
+                        const grp = groups.find(g => g.id === quest.assignedTo);
+                        assignedName = grp ? `Grupa: ${grp.name}` : null;
+                    } else {
+                        const pl = players.find(p => p.id === quest.assignedTo);
+                        assignedName = pl ? pl.name : null;
+                    }
+                }
 
                 let statusHtml = '';
-                if (assignedPlayer) {
-                    statusHtml = `<div class="quest-status-badge">⚔️ ${assignedPlayer.name}</div>`;
+                if (assignedName) {
+                    statusHtml = `<div class="quest-status-badge">⚔️ ${assignedName}</div>`;
                 }
 
                 card.innerHTML = `
@@ -782,42 +875,99 @@
             const list = document.getElementById('playersList');
             list.innerHTML = '';
 
-            if (players.length === 0) {
+            if (players.length === 0 && groups.length === 0) {
                 list.innerHTML = '<div class="no-players-msg">Brak awanturników w gildii.<br>Kliknij + aby dodać pierwszego!</div>';
                 return;
             }
 
-            players.forEach(player => {
-                const nextThreshold = RANK_THRESHOLDS[player.rank];
-                let progressPercent = 100;
-                let expText = `${player.exp} EXP (MAX)`;
+            // Renderuj niezgrupowanych graczy
+            const groupedPlayerIds = new Set();
+            groups.forEach(g => g.memberIds.forEach(id => groupedPlayerIds.add(id)));
 
-                if (player.rank !== "S") {
-                    progressPercent = Math.min(100, Math.round((player.exp / nextThreshold) * 100));
-                    expText = `${player.exp} / ${nextThreshold} EXP`;
+            players.filter(p => !groupedPlayerIds.has(p.id)).forEach(player => {
+                list.appendChild(createPlayerPlaqueHTML(player));
+            });
+
+            // Renderuj grupy i ich członków
+            groups.forEach(group => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'group-container';
+
+                const nextThreshold = RANK_THRESHOLDS[group.rank];
+                let progressPercent = 100;
+                let expText = `${group.exp} EXP (MAX)`;
+
+                if (group.rank !== "S") {
+                    progressPercent = Math.min(100, Math.round((group.exp / nextThreshold) * 100));
+                    expText = `${group.exp} / ${nextThreshold} EXP`;
                 }
 
-                const plaque = document.createElement('div');
-                plaque.className = 'player-plaque';
-                plaque.onclick = () => openEditCoinsModal(player.id);
-                plaque.innerHTML = `
-                    <div class="player-top">
-                        <span class="player-name">${player.name}</span>
-                        <span class="player-rank-badge">${player.rank}</span>
+                groupDiv.innerHTML = `
+                    <div class="group-header-info">
+                        <span class="group-name">👥 ${group.name}</span>
+                        <span class="player-rank-badge">${group.rank}</span>
                     </div>
-                    <div class="player-stats">
+                    <div class="player-stats" style="padding: 0 2px;">
                         <span style="font-size: 0.68rem;">${expText}</span>
-                        <span style="color: var(--gold); font-weight: bold;">🪙 ${player.coins}</span>
+                        <span style="color: var(--gold); font-weight: bold;">🪙 ${group.coins}</span>
                     </div>
-                    <div class="exp-bar-container">
+                    <div class="exp-bar-container" style="margin-bottom: 2px;">
                         <div class="exp-bar-fill" style="width: ${progressPercent}%"></div>
                     </div>
                 `;
-                list.appendChild(plaque);
+
+                // Dodaj członków grupy wewnątrz ramki
+                group.memberIds.forEach(mId => {
+                    const member = players.find(p => p.id === mId);
+                    if (member) {
+                        const mPlaque = createPlayerPlaqueHTML(member, true);
+                        groupDiv.appendChild(mPlaque);
+                    }
+                });
+
+                list.appendChild(groupDiv);
             });
         }
 
+        function createPlayerPlaqueHTML(player, isInsideGroup = false) {
+            const nextThreshold = RANK_THRESHOLDS[player.rank];
+            let progressPercent = 100;
+            let expText = `${player.exp} EXP (MAX)`;
+
+            if (player.rank !== "S") {
+                progressPercent = Math.min(100, Math.round((player.exp / nextThreshold) * 100));
+                expText = `${player.exp} / ${nextThreshold} EXP`;
+            }
+
+            const plaque = document.createElement('div');
+            plaque.className = 'player-plaque';
+            if (isInsideGroup) {
+                plaque.style.background = 'linear-gradient(145deg, #2b1c12, #140b07)';
+                plaque.style.border = '1px solid #7a5f28';
+            }
+            plaque.onclick = () => openEditCoinsModal(player.id);
+            plaque.innerHTML = `
+                <div class="player-top">
+                    <span class="player-name">${player.name}</span>
+                    <span class="player-rank-badge">${player.rank}</span>
+                </div>
+                <div class="player-stats">
+                    <span style="font-size: 0.68rem;">${expText}</span>
+                    <span style="color: var(--gold); font-weight: bold;">🪙 ${player.coins}</span>
+                </div>
+                <div class="exp-bar-container">
+                    <div class="exp-bar-fill" style="width: ${progressPercent}%"></div>
+                </div>
+            `;
+            return plaque;
+        }
+
         function renderAll() {
+            if (!gameMode) {
+                document.getElementById('gameModeModal').style.display = 'flex';
+                return;
+            }
+            document.getElementById('groupModeBtn').style.display = (gameMode === 'group') ? 'inline-block' : 'none';
             ensureQuestLimit();
             renderQuests();
             renderPlayers();
@@ -846,11 +996,20 @@
                     `;
                 }
             } else {
-                const player = players.find(p => p.id === quest.assignedTo);
-                const penalty = Math.floor(quest.coins * 0.5);
+                let assignName = 'Nieznany';
+                let penaltyCoins = quest.coins;
+                if (quest.isGroupAssignment) {
+                    const grp = groups.find(g => g.id === quest.assignedTo);
+                    if (grp) { assignName = `Grupa: ${grp.name}`; penaltyCoins *= 2; }
+                } else {
+                    const pl = players.find(p => p.id === quest.assignedTo);
+                    if (pl) assignName = pl.name;
+                }
+                const penalty = Math.floor(penaltyCoins * 0.5);
+
                 actionsDiv.innerHTML = `
                     <p style="width: 100%; font-size: 0.9rem; color: #3b2214; margin-bottom: 5px;">
-                        Podjęte przez: <strong>${player ? player.name : 'Nieznany'}</strong><br>
+                        Podjęte przez: <strong>${assignName}</strong><br>
                         (Kara: -${penalty} monet)
                     </p>
                     <button class="btn btn-accept" onclick="completeQuest(true)">Ukończone</button>
@@ -870,6 +1029,7 @@
             const selectList = document.getElementById('playerSelectList');
             selectList.innerHTML = '';
 
+            // Dodaj graczy
             players.forEach(player => {
                 const playerRankIndex = RANKS.indexOf(player.rank);
                 const canAccept = questRankIndex <= playerRankIndex + 1;
@@ -882,18 +1042,41 @@
                     <span>${canAccept ? 'Wybierz ➔' : 'Za niska ranga 🔒'}</span>
                 `;
                 if (canAccept) {
-                    btn.onclick = () => assignQuestToPlayer(player.id);
+                    btn.onclick = () => assignQuest(player.id, false);
                 }
                 selectList.appendChild(btn);
             });
 
+            // Jeśli tryb grupowy, dodaj również grupy
+            if (gameMode === 'group') {
+                groups.forEach(group => {
+                    const groupRankIndex = RANKS.indexOf(group.rank);
+                    const canAccept = questRankIndex <= groupRankIndex + 1;
+
+                    const btn = document.createElement('button');
+                    btn.className = 'player-select-btn';
+                    btn.style.background = '#28527a';
+                    btn.style.color = '#fff';
+                    btn.disabled = !canAccept;
+                    btn.innerHTML = `
+                        <span>👥 Grupa: ${group.name} (Ranga ${group.rank}) [Nagrody x2]</span>
+                        <span>${canAccept ? 'Wybierz ➔' : 'Za niska ranga 🔒'}</span>
+                    `;
+                    if (canAccept) {
+                        btn.onclick = () => assignQuest(group.id, true);
+                    }
+                    selectList.appendChild(btn);
+                });
+            }
+
             document.getElementById('assignModal').style.display = 'flex';
         }
 
-        function assignQuestToPlayer(playerId) {
+        function assignQuest(targetId, isGroup) {
             const quest = quests.find(q => q.id === selectedQuestId);
             if (quest) {
-                quest.assignedTo = playerId;
+                quest.assignedTo = targetId;
+                quest.isGroupAssignment = isGroup;
                 renderAll();
             }
             closeModals();
@@ -904,18 +1087,35 @@
             if (questIndex === -1) return;
 
             const quest = quests[questIndex];
-            const player = players.find(p => p.id === quest.assignedTo);
 
-            if (player) {
-                if (isSuccess) {
-                    player.exp += quest.exp;
-                    player.coins += quest.coins;
-                    checkRankUp(player);
-                    quests.splice(questIndex, 1);
-                } else {
-                    const penalty = Math.floor(quest.coins * 0.5);
-                    player.coins = Math.max(0, player.coins - penalty);
-                    quest.assignedTo = null;
+            if (quest.isGroupAssignment) {
+                const group = groups.find(g => g.id === quest.assignedTo);
+                if (group) {
+                    if (isSuccess) {
+                        group.exp += (quest.exp * 2);
+                        group.coins += (quest.coins * 2);
+                        checkRankUpGroup(group);
+                        quests.splice(questIndex, 1);
+                    } else {
+                        const penalty = Math.floor((quest.coins * 2) * 0.5);
+                        group.coins = Math.max(0, group.coins - penalty);
+                        quest.assignedTo = null;
+                        quest.isGroupAssignment = false;
+                    }
+                }
+            } else {
+                const player = players.find(p => p.id === quest.assignedTo);
+                if (player) {
+                    if (isSuccess) {
+                        player.exp += quest.exp;
+                        player.coins += quest.coins;
+                        checkRankUpPlayer(player);
+                        quests.splice(questIndex, 1);
+                    } else {
+                        const penalty = Math.floor(quest.coins * 0.5);
+                        player.coins = Math.max(0, player.coins - penalty);
+                        quest.assignedTo = null;
+                    }
                 }
             }
 
@@ -923,13 +1123,26 @@
             closeModals();
         }
 
-        function checkRankUp(player) {
+        function checkRankUpPlayer(player) {
             while (player.rank !== "S") {
                 const requiredExp = RANK_THRESHOLDS[player.rank];
                 if (player.exp >= requiredExp) {
                     const currentIndex = RANKS.indexOf(player.rank);
                     player.rank = RANKS[currentIndex + 1];
-                    alert(`🎉 AWANS! ${player.name} osiąga rangę ${player.rank}!`);
+                    alert(`🎉 AWANS! Awanturnik ${player.name} osiąga rangę ${player.rank}!`);
+                } else {
+                    break;
+                }
+            }
+        }
+
+        function checkRankUpGroup(group) {
+            while (group.rank !== "S") {
+                const requiredExp = RANK_THRESHOLDS[group.rank];
+                if (group.exp >= requiredExp) {
+                    const currentIndex = RANKS.indexOf(group.rank);
+                    group.rank = RANKS[currentIndex + 1];
+                    alert(`🎉 AWANS GRUPY! Grupa ${group.name} osiąga rangę ${group.rank}!`);
                 } else {
                     break;
                 }
@@ -990,8 +1203,8 @@
         }
 
         function openResetQuestsModal() {
-            if (players.length === 0) {
-                alert("Brak graczy w gildii, aby opłacić odświeżenie tablicy!");
+            if (players.length === 0 && groups.length === 0) {
+                alert("Brak graczy lub grup w gildii, aby opłacić odświeżenie tablicy!");
                 return;
             }
 
@@ -1008,22 +1221,51 @@
                     <span>${canAfford ? 'Opłać 200 🪙 ➔' : 'Za mało monet 🔒'}</span>
                 `;
                 if (canAfford) {
-                    btn.onclick = () => confirmResetQuests(player.id);
+                    btn.onclick = () => confirmResetQuests(player.id, false);
                 }
                 selectList.appendChild(btn);
             });
 
+            if (gameMode === 'group') {
+                groups.forEach(group => {
+                    const canAfford = group.coins >= 200;
+                    const btn = document.createElement('button');
+                    btn.className = 'player-select-btn';
+                    btn.style.background = '#28527a';
+                    btn.style.color = '#fff';
+                    btn.disabled = !canAfford;
+                    btn.innerHTML = `
+                        <span>👥 Grupa: ${group.name} (Posiada: 🪙 ${group.coins})</span>
+                        <span>${canAfford ? 'Opłać 200 🪙 ➔' : 'Za mało monet 🔒'}</span>
+                    `;
+                    if (canAfford) {
+                        btn.onclick = () => confirmResetQuests(group.id, true);
+                    }
+                    selectList.appendChild(btn);
+                });
+            }
+
             document.getElementById('resetQuestsModal').style.display = 'flex';
         }
 
-        function confirmResetQuests(playerId) {
-            const player = players.find(p => p.id === playerId);
-            if (!player || player.coins < 200) {
-                alert("Ten gracz nie ma wystarczającej liczby monet!");
-                return;
+        function confirmResetQuests(id, isGroup) {
+            if (isGroup) {
+                const group = groups.find(g => g.id === id);
+                if (!group || group.coins < 200) {
+                    alert("Ta grupa nie ma wystarczającej liczby monet!");
+                    return;
+                }
+                group.coins -= 200;
+                alert(`📜 Tablica została pomyślnie odświeżona! Grupa ${group.name} opłaciła usługę.`);
+            } else {
+                const player = players.find(p => p.id === id);
+                if (!player || player.coins < 200) {
+                    alert("Ten gracz nie ma wystarczającej liczby monet!");
+                    return;
+                }
+                player.coins -= 200;
+                alert(`📜 Tablica została pomyślnie odświeżona! ${player.name} opłacił usługę.`);
             }
-
-            player.coins -= 200;
 
             const activeQuests = quests.filter(q => q.assignedTo !== null);
             quests = [...activeQuests];
@@ -1031,7 +1273,58 @@
 
             renderAll();
             closeModals();
-            alert(`📜 Tablica została pomyślnie odświeżona! ${player.name} opłacił usługę (koszt: 200 monet).`);
+        }
+
+        function openGroupModal() {
+            if (players.length < 2) {
+                alert("Musisz mieć co najmniej 2 graczy, aby utworzyć grupę!");
+                return;
+            }
+            document.getElementById('groupNameInput').value = '';
+            const list = document.getElementById('groupCheckboxesList');
+            list.innerHTML = '';
+
+            players.forEach(player => {
+                const label = document.createElement('label');
+                label.className = 'checkbox-item';
+                label.innerHTML = `
+                    <input type="checkbox" value="${player.id}" class="group-player-checkbox">
+                    <span>${player.name} (Ranga ${player.rank})</span>
+                `;
+                list.appendChild(label);
+            });
+
+            document.getElementById('createGroupModal').style.display = 'flex';
+        }
+
+        function confirmCreateGroup() {
+            const nameInput = document.getElementById('groupNameInput');
+            const groupName = nameInput.value.trim();
+            if (!groupName) {
+                alert("Wpisz nazwę grupy!");
+                return;
+            }
+
+            const checkboxes = document.querySelectorAll('.group-player-checkbox:checked');
+            const selectedMemberIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+            if (selectedMemberIds.length === 0) {
+                alert("Zaznacz przynajmniej jednego gracza do grupy!");
+                return;
+            }
+
+            const newGroup = {
+                id: Date.now(),
+                name: groupName,
+                memberIds: selectedMemberIds,
+                rank: "F",
+                exp: 0,
+                coins: 0
+            };
+
+            groups.push(newGroup);
+            renderAll();
+            closeModals();
         }
 
         function closeModals() {
@@ -1040,6 +1333,7 @@
             document.getElementById('addPlayerModal').style.display = 'none';
             document.getElementById('editCoinsModal').style.display = 'none';
             document.getElementById('resetQuestsModal').style.display = 'none';
+            document.getElementById('createGroupModal').style.display = 'none';
         }
 
         // Start aplikacji
