@@ -235,24 +235,25 @@
 
         .panel-actions-top {
             display: flex;
-            gap: 6px;
+            gap: 5px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
-        .btn-refresh-quests, .btn-group-mode {
+        .btn-refresh-quests, .btn-group-mode, .btn-transfer {
             background: linear-gradient(to bottom, #593520, #3b2214);
             color: var(--gold-light);
             border: 1px solid var(--gold);
-            padding: 4px 8px;
+            padding: 4px 6px;
             border-radius: 4px;
             font-family: 'Cinzel', serif;
-            font-size: 0.72rem;
+            font-size: 0.68rem;
             cursor: pointer;
             transition: 0.2s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
-        .btn-refresh-quests:hover, .btn-group-mode:hover {
+        .btn-refresh-quests:hover, .btn-group-mode:hover, .btn-transfer:hover {
             background: linear-gradient(to bottom, #73462b, #4a2e1b);
             border-color: #fff;
             transform: scale(1.02);
@@ -262,10 +263,10 @@
             background: linear-gradient(to bottom, #1e5631, #12331e);
             color: #fff;
             border: 1px solid #2e8b57;
-            width: 26px;
-            height: 26px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -544,7 +545,7 @@
             color: var(--ink);
         }
 
-        input[type="text"], input[type="number"] {
+        input[type="text"], input[type="number"], select {
             width: 100%;
             padding: 7px;
             font-family: 'Crimson Text', serif;
@@ -575,6 +576,7 @@
             <div class="panel-header">
                 <h2>🛡️ Awanturnicy</h2>
                 <div class="panel-actions-top">
+                    <button class="btn-transfer" id="transferBtn" title="Przelew między graczami/grupami" onclick="openTransferModal()">💸 Przelew</button>
                     <button class="btn-group-mode" id="groupModeBtn" title="Zarządzaj grupami" onclick="openGroupModal()" style="display:none;">👥 Grupa</button>
                     <button class="btn-refresh-quests" title="Zresetuj zadania na tablicy za 200 monet" onclick="openResetQuestsModal()">🔄 Odśwież</button>
                     <button class="btn-add-player" title="Dodaj nowego gracza" onclick="openAddPlayerModal()">+</button>
@@ -670,6 +672,45 @@
         </div>
     </div>
 
+    <!-- MODAL 8: OKNO PRZELEWU -->
+    <div class="modal-overlay" id="transferModal">
+        <div class="modal-box" style="max-width: 480px;">
+            <h3>💸 Przelew Zasobów</h3>
+            <p style="font-size: 0.8rem; margin-bottom: 8px;">Wybierz nadawcę (lewa), odbiorcę (prawa) oraz wpisz kwotę. Przy przelewach do grup lub między grupami obowiązuje podatek 50%!</p>
+            
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                <div style="flex: 1;">
+                    <label style="font-size: 0.75rem; font-weight: bold; display:block; margin-bottom:2px;">OD (Nadawca):</label>
+                    <select id="transferSenderSelect" style="margin-bottom:0; font-size: 0.85rem;"></select>
+                </div>
+                <div style="font-size: 1.4rem; font-weight: bold; padding-top: 14px;">➡️</div>
+                <div style="flex: 1;">
+                    <label style="font-size: 0.75rem; font-weight: bold; display:block; margin-bottom:2px;">DO (Odbiorca):</label>
+                    <select id="transferReceiverSelect" style="margin-bottom:0; font-size: 0.85rem;"></select>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <div style="flex: 1;">
+                    <label style="font-size: 0.75rem; font-weight: bold; display:block; margin-bottom:2px;">Co przelewasz:</label>
+                    <select id="transferTypeSelect" style="margin-bottom:0; font-size: 0.85rem;">
+                        <option value="coins">Monety (🪙)</option>
+                        <option value="exp">Doświadczenie (EXP ✨)</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-size: 0.75rem; font-weight: bold; display:block; margin-bottom:2px;">Kwota:</label>
+                    <input type="number" id="transferAmountInput" placeholder="np. 50" min="1" style="margin-bottom:0; font-size: 0.85rem;">
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn btn-accept" onclick="confirmTransfer()">Wyślij Przelew</button>
+                <button class="btn btn-cancel" onclick="closeModals()">Anuluj</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         /* ==========================================================================
            === BAZA ZADAŃ (SZABLONY Z TYTUŁAMI I OPISAMI) ===
@@ -735,7 +776,7 @@
             "C": 500,
             "B": 1000,
             "A": 2500,
-            "S": 2500
+            "S": 5000
         };
 
         const PINS = ["🗡️", "📌", "📍", "🗡️"];
@@ -900,9 +941,7 @@
             groups.forEach(group => {
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'group-container';
-                // KLIKNIĘCIE W GRUPĘ OTWIERA ZARZĄDZANIE MONETAMI GRUPY
                 groupDiv.onclick = (e) => {
-                    // Ignoruj kliknięcie, jeśli kliknięto bezpośrednio w tabliczkę gracza wewnątrz grupy
                     if (e.target.closest('.player-plaque')) return;
                     openEditCoinsModal(group.id, true);
                 };
@@ -930,7 +969,6 @@
                     </div>
                 `;
 
-                // Dodaj członków grupy wewnątrz ramki
                 group.memberIds.forEach(mId => {
                     const member = players.find(p => p.id === mId);
                     if (member) {
@@ -960,7 +998,7 @@
                 plaque.style.border = '1px solid #7a5f28';
             }
             plaque.onclick = (e) => {
-                e.stopPropagation(); // Zapobiega wywołaniu kliknięcia grupy w tle
+                e.stopPropagation();
                 openEditCoinsModal(player.id, false);
             };
             plaque.innerHTML = `
@@ -1046,7 +1084,6 @@
             const selectList = document.getElementById('playerSelectList');
             selectList.innerHTML = '';
 
-            // Dodaj graczy
             players.forEach(player => {
                 const playerRankIndex = RANKS.indexOf(player.rank);
                 const canAccept = questRankIndex <= playerRankIndex + 1;
@@ -1064,7 +1101,6 @@
                 selectList.appendChild(btn);
             });
 
-            // Jeśli tryb grupowy, dodaj również grupy
             if (gameMode === 'group') {
                 groups.forEach(group => {
                     const groupRankIndex = RANKS.indexOf(group.rank);
@@ -1362,6 +1398,141 @@
             closeModals();
         }
 
+        /* ==========================================================================
+           === SYSTEM PRZELEWÓW ===
+           ========================================================================== */
+
+        function openTransferModal() {
+            if (players.length === 0 && groups.length === 0) {
+                alert("Brak uczestników do wykonania przelewu!");
+                return;
+            }
+
+            const senderSelect = document.getElementById('transferSenderSelect');
+            const receiverSelect = document.getElementById('transferReceiverSelect');
+            senderSelect.innerHTML = '';
+            receiverSelect.innerHTML = '';
+
+            // Dodaj graczy do list przelewu
+            players.forEach(p => {
+                const opt1 = document.createElement('option');
+                opt1.value = `player_${p.id}`;
+                opt1.text = `${p.name} [🪙 ${p.coins} | ✨ ${p.exp} EXP]`;
+                senderSelect.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = `player_${p.id}`;
+                opt2.text = `${p.name}`;
+                receiverSelect.appendChild(opt2);
+            });
+
+            // Jeśli tryb grupowy, dodaj również grupy
+            if (gameMode === 'group') {
+                groups.forEach(g => {
+                    const opt1 = document.createElement('option');
+                    opt1.value = `group_${g.id}`;
+                    opt1.text = `👥 [Grupa] ${g.name} [🪙 ${g.coins} | ✨ ${g.exp} EXP]`;
+                    senderSelect.appendChild(opt1);
+
+                    const opt2 = document.createElement('option');
+                    opt2.value = `group_${g.id}`;
+                    opt2.text = `👥 [Grupa] ${g.name}`;
+                    receiverSelect.appendChild(opt2);
+                });
+            }
+
+            document.getElementById('transferAmountInput').value = '';
+            document.getElementById('transferModal').style.display = 'flex';
+        }
+
+        function confirmTransfer() {
+            const senderVal = document.getElementById('transferSenderSelect').value;
+            const receiverVal = document.getElementById('transferReceiverSelect').value;
+            const transferType = document.getElementById('transferTypeSelect').value; // 'coins' lub 'exp'
+            const amount = parseInt(document.getElementById('transferAmountInput').value);
+
+            if (senderVal === receiverVal) {
+                alert("Nadawca i odbiorca nie mogą być tą samą osobą/grupą!");
+                return;
+            }
+
+            if (isNaN(amount) || amount <= 0) {
+                alert("Wpisz poprawną kwotę przelewu większą od 0!");
+            return;
+            }
+
+            // Pobierz nadawcę
+            let senderObj = null;
+            let isSenderGroup = senderVal.startsWith('group_');
+            let senderId = parseInt(senderVal.split('_')[1]);
+            if (isSenderGroup) {
+                senderObj = groups.find(g => g.id === senderId);
+            } else {
+                senderObj = players.find(p => p.id === senderId);
+            }
+
+            // Pobierz odbiorcę
+            let receiverObj = null;
+            let isReceiverGroup = receiverVal.startsWith('group_');
+            let receiverId = parseInt(receiverVal.split('_')[1]);
+            if (isReceiverGroup) {
+                receiverObj = groups.find(g => g.id === receiverId);
+            } else {
+                receiverObj = players.find(p => p.id === receiverId);
+            }
+
+            // Sprawdź stan konta nadawcy
+            const currentBalance = transferType === 'coins' ? senderObj.coins : senderObj.exp;
+            if (currentBalance < amount) {
+                alert(`Wybrany nadawca nie posiada wystarczającej liczby zasobów (${transferType === 'coins' ? 'monet' : 'EXP'})! Posiada tylko: ${currentBalance}`);
+                return;
+            }
+
+            // Zasada przelewu: 
+            // Jeśli nadawca to GRACZ, a odbiorca to GRUPA -> zabiera całość, przelewa połowę.
+            // Jeśli nadawca to GRUPA, a odbiorca to GRUPA (lub inny wariant grupowa strona) -> zabiera całość, przelewa połowę.
+            // Jeśli gracz do gracza -> 100%.
+            let isTaxed = false;
+            if (isSenderGroup || isReceiverGroup) {
+                // Jeśli w transakcji bierze udział grupa jako odbiorca (gracz -> grupa lub grupa -> grupa)
+                if (isReceiverGroup) {
+                    isTaxed = true;
+                }
+            }
+
+            let finalReceivedAmount = amount;
+            if (isTaxed) {
+                finalReceivedAmount = Math.floor(amount / 2);
+            }
+
+            // Odejmij od nadawcy CAŁĄ kwotę
+            if (transferType === 'coins') {
+                senderObj.coins -= amount;
+            } else {
+                senderObj.exp -= amount;
+                if (!isSenderGroup) checkRankUpPlayer(senderObj);
+                else checkRankUpGroup(senderObj);
+            }
+
+            // Dodaj do odbiorcy (całość lub połówkę w zależności od podatku)
+            if (transferType === 'coins') {
+                receiverObj.coins += finalReceivedAmount;
+            } else {
+                receiverObj.exp += finalReceivedAmount;
+                if (!isReceiverGroup) checkRankUpPlayer(receiverObj);
+                else checkRankUpGroup(receiverObj);
+            }
+
+            renderAll();
+            closeModals();
+
+            if (isTaxed) {
+                alert(`💸 Przelew zrealizowany! Pobrano pełną kwotę (${amount}), ale ze względu na prowizję banku gildii do odbiorcy dotarło ${finalReceivedAmount}.`);
+            } else {
+                alert(`💸 Przelew pomyślnie zrealizowany w kwocie ${amount}!`);
+            }
+        }
+
         function closeModals() {
             document.getElementById('questModal').style.display = 'none';
             document.getElementById('assignModal').style.display = 'none';
@@ -1369,6 +1540,7 @@
             document.getElementById('editCoinsModal').style.display = 'none';
             document.getElementById('resetQuestsModal').style.display = 'none';
             document.getElementById('createGroupModal').style.display = 'none';
+            document.getElementById('transferModal').style.display = 'none';
         }
 
         // Start aplikacji
